@@ -1,0 +1,44 @@
+{
+  "Textures": {
+    "Mask": "Client/Content/Aki/Character/Role/FemaleM/Jinxi/R2T1JinxiMd20011/Model/T_R2T1JinxiMd20011Eye_HET.T_R2T1JinxiMd20011Eye_HET",
+    "T_R2T1JinxiMd20011Eye_HET": "Client/Content/Aki/Character/Role/FemaleM/Jinxi/R2T1JinxiMd20011/Model/T_R2T1JinxiMd20011Eye_HET.T_R2T1JinxiMd20011Eye_HET"
+  },
+  "Parameters": {
+    "BlendMode": 1,
+    "ShadingModel": 0,
+    "Colors": {
+      "ParallaxOffset": {
+        "R": 0.1,
+        "G": 0.1,
+        "B": 0.0,
+        "A": 0.0,
+        "Hex": "595900"
+      }
+    },
+    "Scalars": {
+      "ParallaxHeight": 0.2,
+      "RefractionDepthBias": 0.0
+    },
+    "Switches": {
+      "UseParallax": true
+    },
+    "Properties": {
+      "bHasStaticPermutationResource": true,
+      "BasePropertyOverrides": {
+        "BlendMode": "BLEND_Masked",
+        "ShadingModel": "MSM_ToonCommon",
+        "OpacityMaskClipValue": 0.3333,
+        "bOverride_RenderQueue": true,
+        "RenderQueue": 190,
+        "bIsOnlyForSkeletalMesh": true,
+        "bDisableCastDynamicShadows": true
+      }
+    },
+    "HasTopDiffuse": false,
+    "HasTopNormals": false,
+    "HasTopSpecularMasks": false,
+    "HasTopEmissive": false,
+    "IsTranslucent": false,
+    "IsNull": false
+  }
+}

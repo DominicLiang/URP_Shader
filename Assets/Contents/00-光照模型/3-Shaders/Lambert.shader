@@ -1,0 +1,143 @@
+Shader "Custom/Normal/Lambert"
+{
+  Properties
+  {
+    // ! -------------------------------------
+    // ! 面板属性
+    [HDR]_MainColor ("主颜色", Color) = (1, 1, 1, 1)
+  }
+  
+  SubShader
+  {
+    LOD 100
+
+    // ! -------------------------------------
+    // ! Tags
+    Tags
+    {
+      "Queue" = "Geometry"
+      "RenderPipeline" = "UniversalPipeline"
+    }
+
+    HLSLINCLUDE
+
+    // ! -------------------------------------
+    // ! 全shader include
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+
+    CBUFFER_START(UnityPerMaterial)
+
+      // ! -------------------------------------
+      // ! 变量声明
+      real4 _MainColor;
+
+    CBUFFER_END
+
+    ENDHLSL
+
+    Pass
+    {
+      // ! -------------------------------------
+      // ! Pass名
+      Name "BasePass"
+
+      // ! -------------------------------------
+      // ! tags
+      Tags
+      {
+        "LightMode" = "UniversalForward"
+      }
+
+      // ! -------------------------------------
+      // ! 渲染状态
+      Cull Back
+      ZTest LEqual
+      ZWrite On
+
+      HLSLPROGRAM
+
+      // ! -------------------------------------
+      // ! pass include
+
+      // ! -------------------------------------
+      // ! Shader阶段
+      #pragma vertex vert
+      #pragma fragment frag
+
+      // ! -------------------------------------
+      // ! 材质关键字 shader_feature
+
+      // ! -------------------------------------
+      // ! URP关键字 multi_compile
+
+      // ! -------------------------------------
+      // ! Unity关键字 multi_compile
+
+      // ! -------------------------------------
+      // ! GPU实例 multi_compile
+
+      // ! -------------------------------------
+      // ! 顶点着色器输入
+      struct appdata
+      {
+        real2 uv : TEXCOORD0;
+        real4 positionOS : POSITION;
+        real3 normalOS : NORMAL;
+      };
+
+      // ! -------------------------------------
+      // ! 顶点着色器输出 片元着色器输入
+      struct v2f
+      {
+        real2 uv : TEXCOORD0;
+        real4 positionCS : SV_POSITION;
+        real3 normalWS : TEXCOORD1;
+      };
+
+      // ! -------------------------------------
+      // ! 顶点着色器
+      v2f vert(appdata v)
+      {
+        v2f o = (v2f)0;
+
+        VertexPositionInputs positionInputs = GetVertexPositionInputs(v.positionOS.xyz);
+        VertexNormalInputs normalInputs = GetVertexNormalInputs(v.normalOS);
+        
+        o.uv = v.uv;
+
+        o.positionCS = positionInputs.positionCS;
+        o.normalWS = normalInputs.normalWS;
+
+        return o;
+      }
+
+      // ! -------------------------------------
+      // ! 片元着色器
+      real4 frag(v2f i) : SV_TARGET
+      {
+        Light mainLight = GetMainLight();
+
+
+        // ! half3 LightingLambert(half3 lightColor, half3 lightDir, half3 normal)
+        // ! 在Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl
+        // real3 color = LightingLambert(mainLight.color, L, N);
+        
+        real3 N = normalize(i.normalWS);
+        real3 L = normalize(mainLight.direction);
+        real NdotL = dot(N, L);
+        real3 color = mainLight.color * max(NdotL, 0) * _MainColor.rgb;
+
+        
+        
+        return real4(color, 1);
+      }
+
+      ENDHLSL
+    }
+  }
+
+  // ! -------------------------------------
+  // ! 紫色报错fallback
+  Fallback "Hidden/Universal Render Pipeline/FallbackError"
+}

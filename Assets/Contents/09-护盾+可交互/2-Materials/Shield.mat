@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Shield
+  m_Shader: {fileID: 4800000, guid: 9dac8e90e9e3049bfa7c907fbe52c331, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Noise:
+        m_Texture: {fileID: 2800000, guid: a9b9323c1e20a426ba14c8696a62e035, type: 3}
+        m_Scale: {x: 8, y: 8}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Edge1: 0
+    - _Edge2: 0.01
+    - _EdgeAlpha: 0.666
+    - _FresnelPower: 0.54
+    - _NoiseIntensity: 0.23
+    - _NoiseRange: 0.255
+    - _SoftRange: 0.15
+    - _Threshold: 0.10571425
+    m_Colors:
+    - _EdgeColor: {r: 1.5687014, g: 2.9960785, b: 2.2251868, a: 1}
+    - _MainColor: {r: 0.37495348, g: 0.77394044, b: 2.7410386, a: 1}
+  m_BuildTextureStacks: []

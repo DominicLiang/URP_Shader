@@ -1,0 +1,50 @@
+{
+  "Textures": {
+    "MainTex": "Client/Content/Aki/Character/Role/FemaleM/Jinxi/R2T1JinxiMd20011/Model/T_R2T1JinxiMd20011Hair_LD.T_R2T1JinxiMd20011Hair_LD",
+    "T_R2T1JinxiMd20011Hair_LD": "Client/Content/Aki/Character/Role/FemaleM/Jinxi/R2T1JinxiMd20011/Model/T_R2T1JinxiMd20011Hair_LD.T_R2T1JinxiMd20011Hair_LD"
+  },
+  "Parameters": {
+    "BlendMode": 0,
+    "ShadingModel": 0,
+    "Colors": {
+      "OutlineColorTint": {
+        "R": 0.657055,
+        "G": 0.530295,
+        "B": 0.739583,
+        "A": 0.0,
+        "Hex": "D4C1E0"
+      }
+    },
+    "Scalars": {
+      "CurvatureStrength": 0.2,
+      "CurvatureMin": 0.0,
+      "CurvatureMax": 1.0,
+      "OutlineClipWidth": 1.2,
+      "OutlineHoldDistance": 2.0,
+      "RefractionDepthBias": 0.0
+    },
+    "Switches": {
+      "UseMainTex": true,
+      "UseVertexColorB_InnerOutline": true,
+      "UseVertexGreen_OutlineWidth": true,
+      "UseClipSpaceOutline": true
+    },
+    "Properties": {
+      "bHasStaticPermutationResource": true,
+      "BasePropertyOverrides": {
+        "ShadingModel": "MSM_ToonOutline",
+        "OpacityMaskClipValue": 0.3333,
+        "RenderQueue": 250,
+        "bIsOnlyForSkeletalMesh": true,
+        "bDisableCastDynamicShadows": true,
+        "bIsBackFace": true
+      }
+    },
+    "HasTopDiffuse": false,
+    "HasTopNormals": false,
+    "HasTopSpecularMasks": false,
+    "HasTopEmissive": false,
+    "IsTranslucent": false,
+    "IsNull": false
+  }
+}
