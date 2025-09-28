@@ -4,8 +4,6 @@ Shader "Custom/StarRail/BodyMatcap"
   {
     // ! -------------------------------------
     // ! 面板属性
-    _DitherAlpha ("DitherAlpha", Range(0, 2)) = 2
-    _AlphaTestThreshold ("透明裁剪阈值", Range(0, 1)) = 0.005
     [NoScaleOffset]_ColorMap ("颜色贴图", 2D) = "white" { }
     [NoScaleOffset]_MaskMap ("MatcapMask", 2D) = "white" { }
     [NoScaleOffset]_MatcapMap1 ("Matcap贴图1", 2D) = "white" { }
@@ -32,6 +30,7 @@ Shader "Custom/StarRail/BodyMatcap"
     // ! 全shader include
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
     #include "Assets/ShaderLibrary/Utility/Node.hlsl"
+    #include "Assets/ShaderLibrary/Utility/NodeFromShaderGraph.hlsl"
 
     TEXTURE2D(_ColorMap); SAMPLER(sampler_ColorMap);
     TEXTURE2D(_MaskMap); SAMPLER(sampler_MaskMap);
@@ -44,8 +43,6 @@ Shader "Custom/StarRail/BodyMatcap"
       // ! 变量声明
       real _OutlineWidth;
       real4 _OutlineColor;
-      real _DitherAlpha;
-      real _AlphaTestThreshold;
 
     CBUFFER_END
 
@@ -131,11 +128,6 @@ Shader "Custom/StarRail/BodyMatcap"
       // ! 片元着色器
       real4 frag(v2f i) : SV_TARGET
       {
-        real dither;
-        real4 screenPosition = i.positionCS / GetScaledScreenParams();
-        Unity_Dither_float(_DitherAlpha * 2, screenPosition, dither);
-        clip(dither - _AlphaTestThreshold);
-
         real4 color = SAMPLE_TEXTURE2D(_ColorMap, sampler_ColorMap, i.uv);
         real4 mask = SAMPLE_TEXTURE2D(_MaskMap, sampler_MaskMap, i.uv);
 

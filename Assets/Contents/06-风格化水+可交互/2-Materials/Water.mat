@@ -79,7 +79,7 @@ Material:
     - _CausticsPower: 2.7
     - _CausticsScale: 0.7
     - _CausticsSpeed: 2.5
-    - _DepthMax: 2.5
+    - _DepthMax: 1.65
     - _DepthMin: 0
     - _Foam: 0
     - _FoamDistortIntensity: 0.05
@@ -124,7 +124,7 @@ Material:
     - _FresnelColor: {r: 0.08522668, g: 0, b: 0.9339623, a: 1}
     - _ShadowColor: {r: 0.5821022, g: 0.6700755, b: 0.9716981, a: 1}
     - _ShineColor: {r: 0.8349056, g: 1, b: 0.94852537, a: 1}
-    - _WaterColorDeep: {r: 0, g: 0.6385703, b: 1, a: 1}
+    - _WaterColorDeep: {r: 0.2216981, g: 0.7192009, b: 1, a: 1}
     - _WaterColorShallow: {r: 0, g: 1, b: 0.59890103, a: 1}
     - _Wave1: {r: 0, g: 1, b: 4, a: 0.5}
     - _Wave2: {r: -0.5, g: -1, b: 4, a: 0.3}

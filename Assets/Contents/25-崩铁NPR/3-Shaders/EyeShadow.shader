@@ -27,6 +27,7 @@ Shader "Custom/StarRail/EyeShadow"
     // ! 全shader include
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
     #include "Assets/ShaderLibrary/Utility/Node.hlsl"
+    #include "Assets/ShaderLibrary/Utility/NodeFromShaderGraph.hlsl"
 
     CBUFFER_START(UnityPerMaterial)
 
@@ -108,9 +109,9 @@ Shader "Custom/StarRail/EyeShadow"
       // ! 片元着色器
       real4 frag(v2f i) : SV_TARGET
       {
-        real dither;
         real4 screenPosition = i.positionCS / GetScaledScreenParams();
-        Unity_Dither_float(_DitherAlpha * 2, screenPosition, dither);
+        real dither = Unity_Dither_float(_DitherAlpha * 2, screenPosition);
+        
         clip(dither - _AlphaTestThreshold);
 
         real4 color = _MainColor;

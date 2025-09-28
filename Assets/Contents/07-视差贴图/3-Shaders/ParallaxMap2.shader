@@ -196,7 +196,7 @@ Shader "Custom/Normal/ParallaxMap2"
       real4 frag(v2f i) : SV_TARGET
       {
         real2 offset = ParallaxOcclusionMapping(_HeightTex, sampler_HeightTex, i.viewDirTS, i.uv, _NumLayers, _ParallaxScale);
-        real2 parallaxUV = i.uv + offset;
+        real2 parallaxUV = offset;
 
         real3 N = normalize(i.normalWS);
         real3 V = normalize(GetCameraPositionWS() - i.positionWS);

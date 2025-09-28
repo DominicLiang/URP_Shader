@@ -33,7 +33,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _NumLayers: 50
-    - _ParallaxScale: 0.05
+    - _NumLayers: 12
+    - _ParallaxScale: 0.03
     m_Colors: []
   m_BuildTextureStacks: []

@@ -15,6 +15,7 @@ public class TestQualityChange : MonoBehaviour
     "Best",
   };
 
+
   private List<string> dataOptions = new()
   {
     "_QUALITY_LOW",

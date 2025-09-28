@@ -1,4 +1,4 @@
-Shader "Custom/Normal/Template"
+Shader "Custom/Normal/B"
 {
   Properties
   {

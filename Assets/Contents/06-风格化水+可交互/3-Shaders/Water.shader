@@ -77,6 +77,7 @@ Shader "Custom/07-Water/Water"
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
     #include "Assets/ShaderLibrary/Utility/Node.hlsl"
+    #include "Assets/ShaderLibrary/Utility/NodeFromShaderGraph.hlsl"
     #include "Assets/ShaderLibrary/PostProcessing/Blur.hlsl"
 
     CBUFFER_START(UnityPerMaterial)
@@ -316,7 +317,7 @@ Shader "Custom/07-Water/Water"
         real3 positionWS = mul(unity_CameraToWorld, positionVS).xyz;
         
         real baseHeight = i.positionWS.y - positionWS.y;
-        real height = Unity_Remap_float4(baseHeight, real2(_DepthMin, _DepthMax), real2(0, 1));
+        real height = Unity_Remap_float(baseHeight, real2(_DepthMin, _DepthMax), real2(0, 1));
         height = saturate(height);
 
         // real baseHeight = eyeDepth + i.positionVS.z; // ! 用posVS.z更适合大面积的水
@@ -346,8 +347,7 @@ Shader "Custom/07-Water/Water"
         // ! 涟漪
         real2 rippleUV = real2(-i.uv.x, -i.uv.y);
         real4 rippleHeight = SAMPLE_TEXTURE2D(_RippleRT, sampler_RippleRT, i.uv);
-        real3 rippleNormal;
-        Unity_NormalFromHeight_World_float(rippleHeight, _RippleNormalIntensity, i.positionWS, TBN, rippleNormal);
+        real3 rippleNormal = Unity_NormalFromHeight_World_float(rippleHeight, _RippleNormalIntensity, i.positionWS, TBN);
         n += rippleNormal;
 
         // ! 反射

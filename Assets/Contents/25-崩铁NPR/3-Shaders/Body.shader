@@ -43,7 +43,7 @@ Shader "Custom/StarRail/Body"
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
     #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Macros.hlsl"
-    #include "Assets/ShaderLibrary/Utility/Node.hlsl"
+    #include "Assets/ShaderLibrary/Utility/NodeFromShaderGraph.hlsl"
 
     // ! -------------------------------------
     // ! 变量声明
@@ -56,8 +56,6 @@ Shader "Custom/StarRail/Body"
 
       // ! -------------------------------------
       // ! 变量声明
-      real _DitherAlpha;
-      real _AlphaTestThreshold;
       real _WarmOrCool;
       real _Shininess;
       real _Roughness;
@@ -108,10 +106,10 @@ Shader "Custom/StarRail/Body"
 
       // ! -------------------------------------
       // ! 材质关键字
-      #pragma shader_feature _MAIN_LIGHT_SHADOWS_SCREEN
-      #pragma shader_feature _MAIN_LIGHT_SHADOWS
-      #pragma shader_feature _MAIN_LIGHT_SHADOWS_CASCADE
-      #pragma multi_compile_fragment _ _SHADOWS_SOFT
+      // #pragma shader_feature _MAIN_LIGHT_SHADOWS_SCREEN
+      // #pragma shader_feature _MAIN_LIGHT_SHADOWS
+      // #pragma shader_feature _MAIN_LIGHT_SHADOWS_CASCADE
+      // #pragma multi_compile_fragment _ _SHADOWS_SOFT
 
       // ! -------------------------------------
       // ! 顶点着色器输入
@@ -171,14 +169,6 @@ Shader "Custom/StarRail/Body"
         // * b通道 高光遮罩 区别有高光的区域
         // * a通道 id 用来区别采集RampMap
 
-        // return _DitherAlpha;
-
-        // todo ditherAlpha
-        real dither;
-        real4 screenPosition = i.positionCS / GetScaledScreenParams();
-        Unity_Dither_float(_DitherAlpha * 2, screenPosition, dither);
-        clip(baseMapColor.a * dither - _AlphaTestThreshold);
-        // clip(baseMapColor.a - _AlphaTestThreshold);
 
         // * 获取必要信息
         real4 shadowCoord = TransformWorldToShadowCoord(i.positionWS);
@@ -221,8 +211,8 @@ Shader "Custom/StarRail/Body"
 
         real4 finalColor = baseMapColor * rampColor + specularColor + rimLight;
 
-        float s = MainLightRealtimeShadow(shadowCoord);
-        return s;
+        // float s = MainLightRealtimeShadow(shadowCoord);
+        // return s;
 
         return real4(finalColor.rgb, 1);
       }

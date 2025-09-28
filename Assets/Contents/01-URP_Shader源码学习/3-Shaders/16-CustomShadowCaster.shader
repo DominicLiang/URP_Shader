@@ -146,6 +146,7 @@ Shader "Custom/Normal/CustomShadowCaster"
       #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
       #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
       #include "Assets/ShaderLibrary/Utility/Node.hlsl"
+      #include "Assets/ShaderLibrary/Utility/NodeFromShaderGraph.hlsl"
 
 
       float3 _LightDirection;
@@ -240,8 +241,7 @@ Shader "Custom/Normal/CustomShadowCaster"
         // clip(grow);
         //--------TecrayC:clip完成-----------------------------
 
-        real dither;
-        Unity_Dither_float(_ShadowAlpha, i.pos / GetScaledScreenParams(), dither);
+        real dither = Unity_Dither_float(_ShadowAlpha, i.pos / GetScaledScreenParams());
         clip(dither - 0.5);
 
         return 0;

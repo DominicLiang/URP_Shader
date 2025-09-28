@@ -47,9 +47,9 @@ v2f vert(appdata v)
 // ! 片元着色器
 real4 frag(v2f i) : SV_TARGET
 {
-  real dither;
-  real4 screenPosition = i.positionCS / GetScaledScreenParams();
-  Unity_Dither_float(_DitherAlpha * 2, screenPosition, dither);
-  clip(dither - _AlphaTestThreshold);
+  // real dither;
+  // real4 screenPosition = i.positionCS / GetScaledScreenParams();
+  // Unity_Dither_float(_DitherAlpha * 2, screenPosition, dither);
+  // clip(dither - _AlphaTestThreshold);
   return _OutlineColor;
 }

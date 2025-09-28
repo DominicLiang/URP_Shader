@@ -104,10 +104,13 @@ Shader "Custom/04-Distortion/Distortion"
         real2 screenUV = (i.posCS / GetScaledScreenParams()).xy;
 
         // ! 裁剪空间 PositionCS
+        // ! 顶点着色器计算出来的裁剪空间到了片元着色器之后就不一样了
+        // ! 片元着色器中要获得下面值范围的数据要用TransformWorldToHClip通过positionWS重新计算?
+        // ! 要么顶点着色器多输出个originPositionCS
         // * x [-w 0 w]   屏幕 左负 中零 右正
         // * y [-w 0 w]   屏幕 下负 中零 上正
         // * z [0 w]      unity中的dx风格深度
-        // * w 通常正(-z)  齐次坐标透视分量
+        // * w 通常正(-z)  齐次坐标透视分量   实际上等于 -viewPosition.z
 
         // ! NDC ->  PositionCS.xyz / PositionCS.w
         // * x [-1 0 1]   如上

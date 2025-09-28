@@ -4,7 +4,6 @@ Shader "Custom/StarRail/Face"
   {
     // ! -------------------------------------
     // ! 面板属性
-    _DitherAlpha ("DitherAlpha", Range(0, 2)) = 2
     _AlphaTestThreshold ("透明裁剪阈值", Range(0, 1)) = 0.005
     [NoScaleOffset]_ColorMap ("颜色贴图", 2D) = "white" { }
     [NoScaleOffset]_SDFMap ("SDF贴图", 2D) = "white" { }
@@ -31,7 +30,7 @@ Shader "Custom/StarRail/Face"
     // ! 全shader include
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-    #include "Assets/ShaderLibrary/Utility/Node.hlsl"
+
 
     TEXTURE2D(_ColorMap); SAMPLER(sampler_ColorMap);
     TEXTURE2D(_SDFMap); SAMPLER(sampler_SDFMap);
@@ -43,7 +42,6 @@ Shader "Custom/StarRail/Face"
       real4 _ShadowColor;
       real _OutlineWidth;
       real4 _OutlineColor;
-      real _DitherAlpha;
       real _AlphaTestThreshold;
 
     CBUFFER_END
@@ -130,11 +128,7 @@ Shader "Custom/StarRail/Face"
       {
         // return i.color.a;
 
-        real dither;
-        real4 screenPosition = i.positionCS / GetScaledScreenParams();
-        Unity_Dither_float(_DitherAlpha * 2, screenPosition, dither);
-        clip(dither - _AlphaTestThreshold);
-        
+
         Light mainLight = GetMainLight();
         real3 frontWS = mul(UNITY_MATRIX_M, real4(1, 0, 0, 0)).xyz;
         real3 rightWS = mul(UNITY_MATRIX_M, real4(0, 0, -1, 0)).xyz;

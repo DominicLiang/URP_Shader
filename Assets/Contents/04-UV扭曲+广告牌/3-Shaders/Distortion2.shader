@@ -61,7 +61,7 @@ Shader "Custom/04-Distortion/Distortion2"
       };
 
       // ! 公告板实现
-      real3 billboard(real3 v)
+      real3 billboard(real3 positionOS)
       {
         real3 rightDir = UNITY_MATRIX_MV[0].xyz;
         real3 upDir = UNITY_MATRIX_MV[1].xyz;
@@ -69,9 +69,9 @@ Shader "Custom/04-Distortion/Distortion2"
 
         // ! 缩放适应
         real3 vNorm;
-        vNorm.x = v.x / length(rightDir);
-        vNorm.y = v.y / length(upDir);
-        vNorm.z = v.z / length(forwardDir);
+        vNorm.x = positionOS.x / length(rightDir);
+        vNorm.y = positionOS.y / length(upDir);
+        vNorm.z = positionOS.z / length(forwardDir);
 
         return rightDir * vNorm.x + upDir * vNorm.y + forwardDir * vNorm.z;
       }

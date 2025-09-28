@@ -202,14 +202,15 @@ Shader "Custom/Normal/QuickSSSWithPBR"
           real thickness = SAMPLE_TEXTURE2D(_ThicknessMap, sampler_ThicknessMap, input.uv);
           thickness = thickness * _ThicknessFactor;
           
-          real3 mainLightSSS = QuickSSS(mainLight, N, V, thickness, _SSSColor.rgb, _DistortionFactor, _BackPower, _BackStrength, _BackAmbient);
-          color.rgb += mainLightSSS;
+          real3 mainLightSSS = QuickSSS(mainLight.direction, N, V, thickness, _DistortionFactor, _BackPower, _BackStrength);
+          color.rgb += mainLightSSS * _SSSColor.rgb * mainLight.color * mainLight.shadowAttenuation;
 
           for (int index = 0; index < GetAdditionalLightsCount(); index++)
           {
             Light light = GetAdditionalLight(index, inputData.positionWS);
-            real3 lightSSS = QuickSSS(light, N, V, thickness, _SSSColor.rgb, _DistortionFactor, _BackPower, _BackStrength, _BackAmbient);
-            color.rgb += lightSSS;
+
+            real3 lightSSS = QuickSSS(light.direction, N, V, thickness, _DistortionFactor, _BackPower, _BackStrength);
+            color.rgb += lightSSS * _SSSColor.rgb * light.color * light.shadowAttenuation;
           }
 
         #endif
