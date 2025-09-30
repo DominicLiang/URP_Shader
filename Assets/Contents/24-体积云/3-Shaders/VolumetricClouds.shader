@@ -4,7 +4,8 @@ Shader "Custom/Normal/VolumetricClouds"
   {
     // ! -------------------------------------
     // ! 面板属性
-    _NoiseTex ("噪声贴图", 3D) = "white" { }
+    [NoScaleOffset]_MainTex ("主贴图", 2D) = "white" { }
+    [HDR]_MainColor ("主颜色", Color) = (1, 1, 1, 1)
   }
   
   SubShader
@@ -25,14 +26,14 @@ Shader "Custom/Normal/VolumetricClouds"
     // ! 全shader include
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-    TEXTURE3D(_NoiseTex);
-    SAMPLER(sampler_NoiseTex);
+    TEXTURE2D(_MainTex);
+    SAMPLER(sampler_MainTex);
 
     CBUFFER_START(UnityPerMaterial)
 
       // ! -------------------------------------
       // ! 变量声明
-
+      real4 _MainColor;
 
     CBUFFER_END
 
@@ -84,7 +85,6 @@ Shader "Custom/Normal/VolumetricClouds"
       {
         real2 uv : TEXCOORD0;
         real4 positionCS : SV_POSITION;
-        real3 positionWS : TEXCOORD1;
       };
 
       // ! -------------------------------------
@@ -106,12 +106,8 @@ Shader "Custom/Normal/VolumetricClouds"
       // ! 片元着色器
       real4 frag(v2f i) : SV_TARGET
       {
-        real3 uvw = real3(i.uv.x, i.uv.y, _Time.y);
-
-        real4 color = SAMPLE_TEXTURE3D(_NoiseTex, sampler_NoiseTex, i.positionWS);
-
-        
-
+        real4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+        color *= _MainColor;
         
         return color;
       }

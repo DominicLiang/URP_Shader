@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Custom_FullScreen_Template
+  m_Shader: {fileID: 4800000, guid: f990100c4608c480994a5837bcd58ff3, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Ints: []
+    m_Floats:
+    - _CircleSize: 0.05
+    - _CircleSmooth: -0.04
+    - _StarSize: 0.08
+    - _StarStep: -0.095
+    m_Colors:
+    - _Color1: {r: 5.217863, g: 2.8166752, b: 6.8636217, a: 1}
+    - _Color2: {r: 5.0893183, g: 8.198251, b: 51.377876, a: 1}
+  m_BuildTextureStacks: []

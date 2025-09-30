@@ -111,7 +111,7 @@ Material:
     - _RefractIntensity: 1.3
     - _Ripple: 0
     - _RippleFoamIntensity: 0.1
-    - _RippleNormalIntensity: 3
+    - _RippleNormalIntensity: 8
     - _Shine: 0
     - _ShineIntensity: 256
     - _ShineSpeed: 0.03

@@ -46,7 +46,7 @@ public class WaterPlanarReflection : MonoBehaviour
 
       reflectCam.clearFlags = CameraClearFlags.Skybox;
       // reflectCam.backgroundColor = Color.clear;
-      reflectCam.cullingMask = ~(LayerMask.GetMask("NonReflectable") | LayerMask.GetMask("P")); // 排除NonReflectable // ! ~号取反
+      reflectCam.cullingMask = ~(LayerMask.GetMask("Interact") | LayerMask.GetMask("P")); // 排除NonReflectable // ! ~号取反
       GL.invertCulling = true; // 反射相机渲染的是物体表面的背面, 所以要开启反向剔除
 
       // 相机变换矩阵
