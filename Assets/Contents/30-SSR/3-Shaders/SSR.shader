@@ -126,6 +126,58 @@ Shader "Custom/Normal/SSR"
         return o;
       }
 
+      void MySSRRayConvert(float3 posWS, out float4 posCS, out float3 screenPos)
+      {
+        posCS = TransformWorldToHClip(posWS);
+        // screenPos.xy = ComputeScreenPos(posCS).xy / posCS.w;
+        float4 screenPosOrg = posCS * 0.5f;
+        screenPosOrg.xy = float2(screenPosOrg.x, screenPosOrg.y * _ProjectionParams.x) + screenPosOrg.w;
+        screenPos.xy = screenPosOrg.xy / posCS.w;
+        screenPos.z = posCS.w;
+      }
+
+      real3 MySSRRayMarch(Texture2D depthTexture, SamplerState samplerDepthTexture, real3 positionWS, real3 normalWS, real3 viewWS, real step, real maxCount)
+      {
+        real3 R = reflect(-viewWS, normalWS);
+
+        real4 startPosCS;
+        real3 startScreenPos;
+        MySSRRayConvert(positionWS, startPosCS, startScreenPos);
+
+        real4 endPosCS;
+        real3 endScreenPos;
+        MySSRRayConvert(positionWS + R, endPosCS, endScreenPos);
+
+        real3 ray = endScreenPos - startScreenPos;
+        real3 rayStep = _SSRMaxSampleDistance / _SSRMaxSampleCount;
+
+        real3 lastScreenPos;
+
+        real3 randomValue = RandomFromUV(startPosCS) * 0.1;
+
+        UNITY_LOOP
+        for (int ii = 0; ii < _SSRMaxSampleCount; ii++)
+        {
+          real3 curScreenPos = startScreenPos + (ii + randomValue) * rayStep * ray;
+
+          if (curScreenPos.x < 0 || curScreenPos.x > 1 || curScreenPos.y < 0 || curScreenPos.y > 1) break;
+
+          real depth = SAMPLE_DEPTH_TEXTURE(depthTexture, samplerDepthTexture, curScreenPos.xy);
+          real eyeDepth = LinearEyeDepth(depth, _ZBufferParams);
+
+          if (eyeDepth < curScreenPos.z)
+          {
+            real samplePercent = (curScreenPos.z - eyeDepth) / (curScreenPos.z - lastScreenPos.z);
+            real3 samplePos = lerp(lastScreenPos, curScreenPos, samplePercent);
+            return curScreenPos;
+          }
+
+          lastScreenPos = curScreenPos;
+        }
+
+        return real3(0, 0, 0);
+      }
+
       // ! -------------------------------------
       // ! 片元着色器
       real4 frag(v2f i) : SV_TARGET
@@ -135,20 +187,19 @@ Shader "Custom/Normal/SSR"
         real3 NdotV = dot(N, V);
         
         real3 R = normalize(reflect(-V, N));
-        real3 ssrUVZ = SSRRayMarch(_CameraDepthTexture, sampler_CameraDepthTexture, i.positionWS,N, V, _SSRSampleStep, _SSRMaxSampleCount);
-        
+        real3 ssrUVZ = SSRRayMarch(_CameraDepthTexture, sampler_CameraDepthTexture, i.positionWS, N, V, _SSRSampleStep, _SSRMaxSampleCount);
 
         real4 ssrColor = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, ssrUVZ.xy);
 
-        real weight = 1;
-        weight *= saturate(1 - pow(max(0.01, NdotV), _FresnelPower));
-        real2 screenUV = i.positionCS.xy / GetScaledScreenParams().xy;
-        real center = 1 - saturate(length(screenUV - 0.5) + _CenterFocus);
-        center = smoothstep(0, 0.5, center);
-        weight *= center;
+        // real weight = 1;
+        // weight *= saturate(1 - pow(max(0.01, NdotV), _FresnelPower));
+        // real2 screenUV = i.positionCS.xy / GetScaledScreenParams().xy;
+        // real center = 1 - saturate(length(screenUV - 0.5) + _CenterFocus);
+        // center = smoothstep(0, 0.5, center);
+        // weight *= center;
 
-        ssrColor = lerp(0, ssrColor, weight);
-        ssrColor.a = 1;
+        // ssrColor = lerp(0, ssrColor, weight);
+        // ssrColor.a = 1;
         
 
         return ssrColor;

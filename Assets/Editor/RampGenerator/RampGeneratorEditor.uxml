@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/Editor/RampGenerator/RampGeneratorEditor.uss?fileID=7433441132597879392&amp;guid=b12d29317e0c84fe4a582b9f7fffd99c&amp;type=3#RampGeneratorEditor" />
+    <ui:Label tabindex="-1" text="Ramp图生成器" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Title" style="align-self: center; width: auto; max-width: none; min-width: auto; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; font-size: 20px;" />
+    <ui:VisualElement style="flex-grow: 1; width: 425px; max-width: 425px; min-width: 425px; align-items: stretch; align-self: center; min-height: auto;">
+        <ui:VisualElement name="Data" style="flex-grow: 1; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px;">
+            <uie:ObjectField label="渐变数据" type="Ramp.RampDataSO, Assembly-CSharp-Editor" name="RampData" binding-path="rampData" style="margin-bottom: 5px;" />
+            <ui:Foldout text="预览" name="Preview" style="border-top-width: 1px; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0);">
+                <uie:ObjectField label="预览材质" name="PreviewMat" type="UnityEngine.Material, UnityEngine.CoreModule" binding-path="previewMaterial" />
+                <ui:TextField picking-mode="Ignore" label="预览属性" name="PreviewProp" binding-path="previewPropertyName" />
+            </ui:Foldout>
+            <uie:PropertyField name="Gradients" binding-path="gradients" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Output" style="flex-grow: 1; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px; margin-top: 10px; border-top-width: 1px; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0);">
+            <ui:IntegerField label="输出宽度" value="256" name="Size" binding-path="outputSize" />
+            <ui:Label tabindex="0" text="贴图输出路径:Asset/Textures" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Path" binding-path="outputPath" style="flex-grow: 0; flex-shrink: 1; width: auto; max-width: 425px; min-width: auto; align-self: flex-start;" />
+            <ui:Button text="更改保存路径" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ChangePath" style="width: 415px; max-width: 415px; min-width: auto; align-self: center;" />
+            <ui:TextField picking-mode="Ignore" label="文件名" name="FileName" binding-path="fileName" />
+            <ui:Button text="保存" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Save" style="width: 415px; max-width: 415px; min-width: auto; align-self: center;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

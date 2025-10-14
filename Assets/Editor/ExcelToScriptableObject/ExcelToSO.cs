@@ -56,7 +56,7 @@ public class ExcelToSO : EditorWindow
   public static void ShowWindows()
   {
     var window = GetWindow<ExcelToSO>("Excel转换ScriptableObject");
-    window.minSize = new Vector2(1470, 500);
+    window.minSize = new Vector2(500, 300);
     window.Show();
   }
 
@@ -217,7 +217,7 @@ public class ExcelToSO : EditorWindow
                           collectionGenericType = args[args.Length - 1];
 
                           isScriptableObject = collectionGenericType.BaseType == typeof(ScriptableObject);
-                         // isSerializable = collectionGenericType.GetAttribute(typeof(SerializableAttribute)) != null;
+                          // isSerializable = collectionGenericType.GetAttribute(typeof(SerializableAttribute)) != null;
                         }
                       }
                     }

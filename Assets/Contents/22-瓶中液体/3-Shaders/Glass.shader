@@ -131,7 +131,7 @@ Shader "Custom/Normal/B"
 
         real2 refractUV = i.uv + fresnel * _RefractIntensity;
         real4 refractColor = SAMPLE_TEXTURE2D(_MainTex2, sampler_MainTex2, refractUV);
-        refractColor *= 0.5f;
+        // refractColor *= 0.5f;
         real4 color = lerp(reflectColor, refractColor, fresnel);
         color.a = saturate(max(color.r, fresnel));
         

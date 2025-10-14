@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 
+[ExecuteAlways]
 public class CloudCubeController : MonoBehaviour
 {
     private BoxCollider boxCollider;
@@ -11,9 +13,8 @@ public class CloudCubeController : MonoBehaviour
         SetValue();
     }
 
-    private void OnValidate()
+    private void Update()
     {
-        Init();
         SetValue();
     }
 
@@ -27,7 +28,7 @@ public class CloudCubeController : MonoBehaviour
     {
         var min = new Vector4(boxCollider.bounds.min.x, boxCollider.bounds.min.y, boxCollider.bounds.min.z);
         var max = new Vector4(boxCollider.bounds.max.x, boxCollider.bounds.max.y, boxCollider.bounds.max.z);
-        meshRenderer.sharedMaterial.SetVector("_BoundsMin", min);
-        meshRenderer.sharedMaterial.SetVector("_BoundsMax", max);
+        Shader.SetGlobalVector("_BoundsMin", min);
+        Shader.SetGlobalVector("_BoundsMax", max);
     }
 }

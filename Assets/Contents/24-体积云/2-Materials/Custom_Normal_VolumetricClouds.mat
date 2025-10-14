@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Custom_Normal_VolumetricClouds
-  m_Shader: {fileID: 4800000, guid: 0e108a32d9803488180f8cf709e6e74b, type: 3}
+  m_Shader: {fileID: 4800000, guid: 201898dc0a088435bb9d294684d28c4a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -23,8 +23,32 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _2DTexA:
+        m_Texture: {fileID: 2800000, guid: 1b84703bb95514f9dbcf84d7c8f9641d, type: 3}
+        m_Scale: {x: 0.05, y: 0.05}
+        m_Offset: {x: 0.05, y: 0}
+    - _2DTexB:
+        m_Texture: {fileID: 2800000, guid: 0fb9362bcd46d46c5a949971d5088e11, type: 3}
+        m_Scale: {x: 0.01, y: 0.01}
+        m_Offset: {x: 0.01, y: 0}
+    - _3DTexA:
+        m_Texture: {fileID: 11700000, guid: f006451cccb354551ab82234289ea7e7, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _3DTexB:
+        m_Texture: {fileID: 11700000, guid: 8b0ead99931fb486faccab0153531b9f, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HeightCurveA:
+        m_Texture: {fileID: 2800000, guid: 8d0e6986eccb841d9b11f56924a7770c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HeightCurveB:
+        m_Texture: {fileID: 2800000, guid: e8ccdb18f948149c8acb7157876e3cea, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 11700000, guid: f006451cccb354551ab82234289ea7e7, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseTex:
@@ -33,7 +57,22 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _2DTexATiling: 0.5
+    - _2DTexBTiling: 1
+    - _3DTexATiling: 0.1
+    - _3DTexBTiling: 0.25
+    - _LightMaxIter: 10
+    - _LightScale: 0.5
+    - _LightStepLength: 1
+    - _MaxIter: 100
+    - _NoiseCullThreshold: 1.2
+    - _StepLength: 10
+    - _TexTiling: 0.05
     - _Tiling: 1
     m_Colors:
+    - _3DTexAOffset: {r: 0.05, g: 0, b: 0, a: 1}
+    - _3DTexATiling: {r: 0.06, g: 0.91, b: 0, a: 1}
+    - _3DTexBOffset: {r: 0.01, g: 0, b: 0, a: 1}
+    - _3DTexBTiling: {r: 0, g: 0, b: 0, a: 1}
     - _MainColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

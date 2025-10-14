@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/Contents/32-UIToolKit/Editor/SceneObjectWindow.uss?fileID=7433441132597879392&amp;guid=8edbd7045ab4449c3a657ea88a015941&amp;type=3#SceneObjectWindow" />
+    <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+        <ui:VisualElement name="Top" style="flex-grow: 0; flex-direction: row; height: 25px; flex-shrink: 0; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px;">
+            <uie:ObjectField label="Object Field" name="ObjectField" style="flex-grow: 1;" />
+            <ui:Button text="Create" parse-escape-sequences="true" display-tooltip-when-elided="true" name="CreateBtn" style="width: 100px; background-color: rgb(5, 94, 16);" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Mid" style="flex-grow: 1; flex-direction: row; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px; flex-shrink: 0; min-height: 300px;">
+            <ui:ListView name="Left" class="LeftListView" style="border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); border-top-width: 1px;" />
+            <ui:VisualElement name="Right" class="Right" style="-unity-background-image-tint-color: rgba(0, 0, 0, 0);">
+                <ui:Label tabindex="-1" text="物体信息" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: normal; font-size: 24px;" />
+                <ui:Foldout text="Foldout" name="Foldout" class="Foldout">
+                    <ui:TextField picking-mode="Ignore" label="Name" name="ObjName" style="background-color: rgba(0, 0, 0, 0);" />
+                    <ui:Vector3Field label="Position" name="ObjPosition" />
+                    <ui:IntegerField label="Temp" value="42" name="IntTemp" />
+                </ui:Foldout>
+                <uie:PropertyField name="P" binding-path="gradients" style="height: auto; flex-grow: 1; flex-shrink: 0;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Button text="Refresh" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RefreshBtn" style="height: 50px;" />
+    </ui:VisualElement>
+</ui:UXML>

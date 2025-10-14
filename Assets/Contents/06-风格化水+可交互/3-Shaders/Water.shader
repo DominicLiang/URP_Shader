@@ -47,7 +47,7 @@ Shader "Custom/07-Water/Water"
     [Sub(Reflect)]_CubeMap ("环境反射贴图", Cube) = "" { }
     [Sub(Reflect)]_ReflectIntensity ("反射强度", Range(0, 1)) = 0.5
     [Sub(Reflect)]_ReflectDistortIntensity ("反射扰动强度", Range(0, 1)) = 0.5
-    [Sub(Reflect)]_ReflectBlurIntensity ("反射模糊强度", Range(0, 1)) = 0.5
+    [Sub(Reflect)]_ReflectBlurIntensity ("反射模糊强度", Range(0, 5)) = 0.5
     
     [Main(Caustics, _, off, off)]_Caustics ("焦散", float) = 0
     [Sub(Caustics)]_CausticsColor ("焦散颜色", Color) = (1, 1, 1, 1)

@@ -1,0 +1,44 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/Editor/NoiseGenerator/NoiseGeneratorEditor.uss?fileID=7433441132597879392&amp;guid=a334ec89962b041d9875be70f2521809&amp;type=3#NoiseGeneratorEditor" />
+    <ui:VisualElement style="flex-grow: 1; width: 450px; max-width: 450px; min-width: 450px; height: 700px; max-height: 700px; min-height: 700px; align-self: center;">
+        <ui:Label tabindex="-1" text="噪声图生成器" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Title" style="align-self: center; width: auto; max-width: none; min-width: auto; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; font-size: 20px;" />
+        <ui:VisualElement name="Top" style="flex-grow: 1; align-self: center; border-top-width: 1px; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); height: 320px; max-height: 320px; min-height: 320px;">
+            <ui:VisualElement name="Preview" style="flex-grow: 0; height: 320px; flex-direction: row; width: 425px; max-width: 425px; min-width: 425px; max-height: 320px; min-height: 320px;">
+                <ui:VisualElement name="RgbPreview" style="flex-grow: 0; flex-direction: column; height: auto; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px;">
+                    <ui:VisualElement name="R" style="flex-grow: 1; width: 100px; height: 100px; background-color: rgb(255, 0, 0); min-width: 100px; min-height: 100px; max-width: 100px; max-height: 100px;" />
+                    <ui:VisualElement name="G" style="flex-grow: 1; width: 100px; height: 100px; background-color: rgb(6, 255, 0); margin-right: 0; margin-left: 0; min-width: 100px; min-height: 100px; margin-top: 5px; margin-bottom: 5px; max-width: 100px; max-height: 100px;" />
+                    <ui:VisualElement name="B" style="flex-grow: 1; width: 100px; height: 100px; background-color: rgb(2, 0, 255); min-width: 100px; min-height: 100px; max-height: 100px; max-width: 100px;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="OutputPreview" style="flex-grow: 1; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px;">
+                    <ui:VisualElement name="Output" style="flex-grow: 1; width: 310px; height: 310px; align-self: flex-end; background-color: rgb(0, 0, 0); max-width: 310px; max-height: 310px; min-width: 310px; min-height: 310px;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="Middle" style="flex-grow: 1; align-self: center; width: 450px; max-width: 425px; min-width: 425px; flex-direction: row; border-top-width: 1px; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0);">
+            <ui:VisualElement name="Info" style="flex-grow: 1; border-right-width: 1px; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); width: 250px; max-width: 250px; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px;">
+                <ui:IntegerField label="种子" value="54321" binding-path="seed" name="Seed" />
+                <ui:Toggle label="四方连续" value="true" name="Tiled" binding-path="tiled" />
+                <ui:Vector2Field label="分辨率" name="Resolution" x="10" y="10" binding-path="resolution" class="Vectoor2" />
+                <ui:VisualElement name="FBM" style="flex-grow: 1;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="OutputInfo" style="flex-grow: 1; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px; width: 150px; max-width: 200px; min-width: 150px;">
+                <ui:VisualElement style="flex-grow: 1; justify-content: center;">
+                    <ui:EnumField label="噪声类型" type="Noise.NoiseType, Assembly-CSharp-Editor" name="NoiseType" binding-path="noiseType" class="Enum" style="-unity-font-style: bold; margin-bottom: 10px;" />
+                    <ui:FloatField label="明度" value="42.2" name="Brightness" binding-path="brightness" />
+                    <ui:FloatField label="对比度" value="42.2" name="Contrast" binding-path="contrast" style="margin-bottom: 10px;" />
+                    <ui:IntegerField label="输出尺寸" value="512" name="OutputSize" binding-path="outputSize" />
+                    <ui:EnumField label="保存格式" type="Noise.SaveFormat, Assembly-CSharp-Editor" name="SaveFormat" binding-path="saveFormat" />
+                    <ui:EnumField label="输出R" type="Noise.ColorChannel, Assembly-CSharp-Editor" name="OutputR" binding-path="outputR" class="Enum" />
+                    <ui:EnumField label="输出G" type="Noise.ColorChannel, Assembly-CSharp-Editor" name="OutputG" binding-path="outputG" class="Enum" />
+                    <ui:EnumField label="输出B" type="Noise.ColorChannel, Assembly-CSharp-Editor" name="OutputB" binding-path="outputB" class="Enum" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="Bottom" style="flex-grow: 1; align-self: center; width: 425px; max-width: 425px; min-width: 425px; border-top-width: 1px; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px;">
+            <ui:Label tabindex="0" text="贴图输出路径:Asset/Textures" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Path" binding-path="outputPath" style="flex-grow: 0; flex-shrink: 1; width: 425px; max-width: 425px; min-width: 425px; align-self: center;" />
+            <ui:Button text="更改保存路径" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ChangePath" style="width: 425px; max-width: 425px; min-width: 425px; align-self: center;" />
+            <ui:TextField picking-mode="Ignore" label="文件名" name="FileName" binding-path="fileName" />
+            <ui:Button text="保存" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Save" style="width: 425px; max-width: 425px; min-width: 425px; align-self: center;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

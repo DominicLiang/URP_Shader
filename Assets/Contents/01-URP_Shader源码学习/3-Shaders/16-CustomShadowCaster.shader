@@ -193,24 +193,12 @@ Shader "Custom/Normal/CustomShadowCaster"
       float4 GetShadowPositionHClips(a2v v)
       {
         float4 vertex_OS = v.vertex;
-        //-------TecrayC:顶点缩放部分----需要和主pass一样-----
-        // 权重：前端缩放
-        // float grow = 1.0 - (v.texcoord.y - _Grow);
-        // float weight = 1.0 - Smootherstep(_GrowMin,_GrowMax, grow);
-        // float endWeight = Smootherstep(_EndMin,_EndMax,v.texcoord.y);
-        // weight = max(weight, endWeight);
-        // // 顶点缩放
-        // float3 finalOffset = v.normal * _ExpandScale * weight * 0.1;
-        // vertex_OS.xyz = vertex_OS + finalOffset;
-        //----TecrayC:顶点缩放完成-------------------------------------
 
         //阴影
         float3 positionWS = TransformObjectToWorld(vertex_OS.xyz);
         float3 normalWS = TransformObjectToWorldNormal(v.normal);
         // 获取阴影专用裁剪空间下的坐标
-        // float4 positionCS = TransformWorldToHClip(ApplyShadowBias(positionWS, normalWS, _LightDirection));
-        float2 selfShadowBias = float2(selfShadowDepthBias, selfShadowNormalBias);
-        float4 positionCS = TransformWorldToHClip(ApplySelfShadowBias(positionWS, normalWS, _LightDirection, selfShadowBias));
+        float4 positionCS = TransformWorldToHClip(ApplyShadowBias(positionWS, normalWS, _LightDirection));
 
         // 判断是否是在DirectX平台翻转过坐标
         #if UNITY_REVERSED_Z
@@ -229,7 +217,6 @@ Shader "Custom/Normal/CustomShadowCaster"
         o.pos = GetShadowPositionHClips(v);
         return o;
       }
-
 
       half4 frag(v2f i) : SV_TARGET
       {

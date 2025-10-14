@@ -257,7 +257,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 2e52f94c9eeec4f85b8610a2d10cc73f,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 2.412
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2e52f94c9eeec4f85b8610a2d10cc73f,
         type: 3}
@@ -309,6 +309,26 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 83c9ba646018d46168ce5ff4b9a0275a, type: 2}
+    - target: {fileID: -367344809865350757, guid: 2e52f94c9eeec4f85b8610a2d10cc73f,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: -367344809865350757, guid: 2e52f94c9eeec4f85b8610a2d10cc73f,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: -367344809865350757, guid: 2e52f94c9eeec4f85b8610a2d10cc73f,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: -367344809865350757, guid: 2e52f94c9eeec4f85b8610a2d10cc73f,
+        type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2e52f94c9eeec4f85b8610a2d10cc73f,
         type: 3}
       propertyPath: m_Name
@@ -326,7 +346,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -628397836153799060, guid: 2e52f94c9eeec4f85b8610a2d10cc73f,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1057639631}
+      addedObject: {fileID: 1057639634}
   m_SourcePrefab: {fileID: 100100000, guid: 2e52f94c9eeec4f85b8610a2d10cc73f, type: 3}
 --- !u!1 &1057639629 stripped
 GameObject:
@@ -334,13 +354,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1057639628}
   m_PrefabAsset: {fileID: 0}
---- !u!23 &1057639630 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 6701829521411164605, guid: 2e52f94c9eeec4f85b8610a2d10cc73f,
-    type: 3}
-  m_PrefabInstance: {fileID: 1057639628}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1057639631
+--- !u!114 &1057639634
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -349,18 +363,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1057639629}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea979938f33964b58b98645f2aac60fe, type: 3}
+  m_Script: {fileID: 11500000, guid: 3171cf3bbd5494b7990edc27d6c6a937, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateMode: 0
-  MaxWobble: 0.03
-  WobbleSpeedMove: 1
-  fillAmount: 0.5
+  MaxWobble: 0.005
+  WobbleSpeed: 1.5
   Recovery: 1
-  Thickness: 1
-  CompensateShapeAmount: 0
-  mesh: {fileID: 139370376308011262, guid: 2e52f94c9eeec4f85b8610a2d10cc73f, type: 3}
-  rend: {fileID: 1057639630}
 --- !u!1 &1994772079
 GameObject:
   m_ObjectHideFlags: 0

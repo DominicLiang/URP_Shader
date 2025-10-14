@@ -1392,7 +1392,6 @@
     "m_SourceType": 0,
     "m_FunctionName": "SmoothUnion",
     "m_FunctionSource": "48205ddc9b4494990b0ecfb755ce3430",
-    "m_FunctionSourceUsePragmas": true,
     "m_FunctionBody": "Enter function body here..."
 }
 
@@ -3993,9 +3992,6 @@
     "m_AlphaClip": false,
     "m_CastShadows": true,
     "m_ReceiveShadows": true,
-    "m_DisableTint": false,
-    "m_AdditionalMotionVectorMode": 0,
-    "m_AlembicMotionVectors": false,
     "m_SupportsLODCrossFade": false,
     "m_CustomEditorGUI": "",
     "m_SupportVFX": false

@@ -26,14 +26,12 @@ Shader "Custom/StarRail/Body"
   
   SubShader
   {
-    LOD 100
-
     // ! -------------------------------------
     // ! Tags
     Tags
     {
-      "Queue" = "Geometry-30"
       "RenderPipeline" = "UniversalPipeline"
+      "Queue" = "Geometry+30"
     }
 
     HLSLINCLUDE
@@ -44,6 +42,8 @@ Shader "Custom/StarRail/Body"
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
     #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Macros.hlsl"
     #include "Assets/ShaderLibrary/Utility/NodeFromShaderGraph.hlsl"
+    #include "../1-Scripts/PerObjectSelfShadow/Shader/PerObjectShadow.hlsl"
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 
     // ! -------------------------------------
     // ! 变量声明
@@ -51,6 +51,8 @@ Shader "Custom/StarRail/Body"
     TEXTURE2D(_LightMap); SAMPLER(sampler_LightMap);
     TEXTURE2D(_WarmRamp); SAMPLER(sampler_WarmRamp);
     TEXTURE2D(_CoolRamp); SAMPLER(sampler_CoolRamp);
+
+
 
     CBUFFER_START(UnityPerMaterial)
 
@@ -63,8 +65,12 @@ Shader "Custom/StarRail/Body"
       real _RimLight;
       real _OutlineWidth;
       real4 _OutlineColor;
-
+      
+      int _PerObjSelfShadowIndex;
+      
     CBUFFER_END
+
+
 
     ENDHLSL
 
@@ -107,9 +113,10 @@ Shader "Custom/StarRail/Body"
       // ! -------------------------------------
       // ! 材质关键字
       // #pragma shader_feature _MAIN_LIGHT_SHADOWS_SCREEN
-      // #pragma shader_feature _MAIN_LIGHT_SHADOWS
-      // #pragma shader_feature _MAIN_LIGHT_SHADOWS_CASCADE
-      // #pragma multi_compile_fragment _ _SHADOWS_SOFT
+      #pragma shader_feature _MAIN_LIGHT_SHADOWS
+      #pragma shader_feature _MAIN_LIGHT_SHADOWS_CASCADE
+      #pragma multi_compile_fragment _ _SHADOWS_SOFT
+      
 
       // ! -------------------------------------
       // ! 顶点着色器输入
@@ -120,6 +127,8 @@ Shader "Custom/StarRail/Body"
         real4 color : COLOR;
         real4 positionOS : POSITION;
         real3 normalOS : NORMAL;
+        float3 avgNormalOS : TEXCOORD7;
+        float3 tangentOS : TANGENT;
       };
 
       // ! -------------------------------------
@@ -132,6 +141,8 @@ Shader "Custom/StarRail/Body"
         real4 positionCS : SV_POSITION;
         real3 positionWS : TEXCOORD2;
         real3 normalWS : TEXCOORD3;
+        float3 avgNormalOS : TEXCOORD7;
+        real3 tangentOS : TEXCOORD8;
       };
 
       // ! -------------------------------------
@@ -150,6 +161,9 @@ Shader "Custom/StarRail/Body"
         o.positionWS = positionInputs.positionWS;
         o.normalWS = normalInputs.normalWS;
 
+        o.avgNormalOS = v.avgNormalOS;
+        o.tangentOS = v.tangentOS;
+
         return o;
       }
 
@@ -159,6 +173,8 @@ Shader "Custom/StarRail/Body"
       {
         // * 区分正反面uv
         real2 uv = lerp(i.uv1, i.uv2, IS_FRONT_VFACE(isFrontFace, 0, 1));
+
+        i.normalWS = lerp(i.normalWS, -i.normalWS, IS_FRONT_VFACE(isFrontFace, 0, 1));
 
         // * 采样贴图
         real4 baseMapColor = SAMPLE_TEXTURE2D(_ColorMap, sampler_ColorMap, uv);
@@ -182,24 +198,34 @@ Shader "Custom/StarRail/Body"
         real NdotV = dot(N, V); // 菲尼尔
 
         // * 计算ramp贴图uv
-        real ao = lightMapColor.g * i.color.r;
+        real ao = lightMapColor.g;
         real NdotL01 = NdotL * 0.5 + 0.5;
         float shadow = min(1.0f, dot(NdotL01.xx, 2 * ao.xx)); // ? dot(NdotL01.xx, 2 * ao.xx) 没看懂
         shadow = max(0.001f, shadow) * 0.75f + 0.25f; // ? 经验值
         shadow = (shadow > 1) ? 0.99f : shadow; // * 防止采样超出边界
+        // * 阴影计算
+        float4 shadowCoord3 = i.positionCS / GetScaledScreenParams();
+        mainLight.shadowAttenuation = half(SAMPLE_TEXTURE2D(_ScreenSpaceShadowmapTexture, sampler_PointClamp, shadowCoord3.xy).x);
+        real4 selfShadow = MainLightPerObjectSelfShadow(i.positionWS, _PerObjSelfShadowIndex);
+        selfShadow = min(mainLight.shadowAttenuation, selfShadow);
         shadow = lerp(0.20, shadow, saturate(mainLight.shadowAttenuation + HALF_EPS));
         shadow = lerp(0, shadow, step(0.05, ao)); // AO < 0.05 的区域（自阴影区域）永远不受光
         shadow = lerp(1, shadow, step(ao, 0.95)); // AO > 0.95 的区域永远受最强光
         real2 rampUV = real2(shadow, lightMapColor.a + 0.05);
 
+        // return mainLight.shadowAttenuation;
+
+        // return step(0.05, ao);
+        
         // * 采样ramp贴图
         real4 warmRampColor = SAMPLE_TEXTURE2D(_WarmRamp, sampler_WarmRamp, rampUV);
         real4 coolRampColor = SAMPLE_TEXTURE2D(_CoolRamp, sampler_CoolRamp, rampUV);
         real4 rampColor = lerp(warmRampColor, coolRampColor, _WarmOrCool);
+        // return rampColor;
 
         // * 高光
         float attenuation = mainLight.shadowAttenuation * saturate(mainLight.distanceAttenuation);
-        float blinnPhong = pow(max(0.01, NdotH), _Shininess) * attenuation;
+        float blinnPhong = pow(max(0.01, NdotH), _Shininess) * attenuation * selfShadow;
         float threshold = 1.03 - lightMapColor.b; // * 高光材质阈值
         float specular = smoothstep(threshold - _Roughness, threshold + _Roughness, blinnPhong); // * 高光
         specular *= lightMapColor.r * _HightLightIntensity;
@@ -210,10 +236,7 @@ Shader "Custom/StarRail/Body"
         real4 rimLight = step(_RimLight, fresnel * lightMapColor.g) * baseMapColor;
 
         real4 finalColor = baseMapColor * rampColor + specularColor + rimLight;
-
-        // float s = MainLightRealtimeShadow(shadowCoord);
-        // return s;
-
+        
         return real4(finalColor.rgb, 1);
       }
 
@@ -255,16 +278,16 @@ Shader "Custom/StarRail/Body"
       ENDHLSL
     }
 
-    pass
+    Pass
     {
-      Name "ShadowCaster"
+      Name "BodyShadow"
       Tags
       {
-        "LightMode" = "ShadowCaster"
+        "LightMode" = "PerObjectSelfShadowCaster"
       }
 
       ColorMask 0
-      Cull Back
+      Cull Off
       ZWrite On
       ZTest LEqual
 
@@ -272,21 +295,24 @@ Shader "Custom/StarRail/Body"
 
       #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
       #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
-      #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
+      #include "./ShadowCaster.hlsl"
+
+      #pragma target 2.0
 
       #pragma shader_feature _ALPHATEST_ON
       #pragma shader_feature _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
       #pragma multi_compile_instancing
 
       #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
+      #pragma multi_compile_vertex _ _CASTING_SELF_SHADOW
 
-      #pragma vertex ShadowPassVertex
-      #pragma fragment ShadowPassFragment
+      #pragma vertex vert
+      #pragma fragment frag
 
       ENDHLSL
     }
 
-    pass
+    Pass
     {
       Name "DepthOnly"
 
@@ -320,7 +346,7 @@ Shader "Custom/StarRail/Body"
     }
 
     // ! 支持MSAA
-    pass
+    Pass
     {
       Name "DepthNormals"
 
@@ -357,5 +383,5 @@ Shader "Custom/StarRail/Body"
 
   // ! -------------------------------------
   // ! 紫色报错fallback
-  Fallback "Hidden/Universal Render Pipeline/FallbackError"
+  Fallback Off
 }

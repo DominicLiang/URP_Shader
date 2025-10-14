@@ -12,6 +12,7 @@ struct appdata
   float4 color : COLOR;
   float2 uv1 : TEXCOORD0;
   float2 uv2 : TEXCOORD1;
+  float3 uv7 : TEXCOORD7;
 };
 
 
@@ -21,7 +22,10 @@ struct v2f
 {
   real2 uv : TEXCOORD0;
   real4 positionCS : SV_POSITION;
+  float3 uv7 : TEXCOORD7;
 };
+
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
 // ! -------------------------------------
 // ! 顶点着色器
@@ -32,13 +36,20 @@ v2f vert(appdata v)
   real3 dist = distance(mul(UNITY_MATRIX_M, real4(v.positionOS, 1)), _WorldSpaceCameraPos);
   dist = lerp(1, dist, 0.5);
 
-  real3 offset = _OutlineWidth * 0.01 * v.normalOS.xyz * v.color.a * dist;
+
+  // real3 avgNormal = normalize(v.color.xyz * 2 - 1);
+  real3 avgNormal = normalize(v.tangentOS.xyz);
+
+
+  real3 offset = _OutlineWidth * 0.01 * avgNormal * v.color.a * dist;
 
   v.positionOS.xyz += offset;
 
   VertexPositionInputs vertexInputs = GetVertexPositionInputs(v.positionOS);
 
   o.positionCS = vertexInputs.positionCS;
+
+  o.uv7 = v.uv7;
 
   return o;
 }

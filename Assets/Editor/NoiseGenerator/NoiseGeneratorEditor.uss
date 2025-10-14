@@ -1,0 +1,17 @@
+Label {
+    width: 70px;
+    max-width: 70px;
+    min-width: 70px;
+}
+
+#unity-x-input > Label {
+    width: 15px;
+    max-width: 15px;
+    min-width: 15px;
+}
+
+#unity-y-input > Label {
+    width: 15px;
+    max-width: 15px;
+    min-width: 15px;
+}

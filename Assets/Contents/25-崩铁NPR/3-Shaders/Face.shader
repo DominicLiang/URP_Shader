@@ -186,16 +186,16 @@ Shader "Custom/StarRail/Face"
       ENDHLSL
     }
 
-    pass
+    Pass
     {
-      Name "ShadowCaster"
+      Name "BodyShadow"
       Tags
       {
-        "LightMode" = "ShadowCaster"
+        "LightMode" = "PerObjectSelfShadowCaster"
       }
 
       ColorMask 0
-      Cull [_Cull]
+      Cull Back
       ZWrite On
       ZTest LEqual
 
@@ -205,11 +205,14 @@ Shader "Custom/StarRail/Face"
       #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
       #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
 
+      #pragma target 2.0
+
       #pragma shader_feature _ALPHATEST_ON
       #pragma shader_feature _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
       #pragma multi_compile_instancing
 
       #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
+      #pragma multi_compile_vertex _ _CASTING_SELF_SHADOW
 
       #pragma vertex ShadowPassVertex
       #pragma fragment ShadowPassFragment

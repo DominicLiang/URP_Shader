@@ -2,18 +2,19 @@ Shader "Custom/10-Shield/Shield"
 {
   Properties
   {
-    [HDR]_MainColor ("主颜色", Color) = (1, 1, 1, 1)
-    _FresnelPower ("菲尼尔系数", Range(0.001, 10)) = 1
-    [HDR]_EdgeColor ("边缘颜色", Color) = (1, 1, 1, 1)
-    _EdgeAlpha ("边缘透明度", Range(0, 1)) = 1
-    _SoftRange ("边缘范围", Range(0.01, 1)) = 0.2
-    _Noise ("扭曲贴图", 2D) = "white" { }
-    _NoiseIntensity ("扭曲强度", Range(0, 2)) = 1
-    _NoiseRange ("扭曲范围", Range(0.01, 1)) = 0.2
+    _LightTex ("扫光贴图", 2D) = "white" { }
+    _MaskTex ("遮罩贴图", 2D) = "white" { }
+    _NoiseTex ("噪声贴图", 2D) = "white" { }
 
-    _Threshold ("_Threshold", Float) = 0
-    _Edge1 ("_Edge1", Float) = 0
-    _Edge2 ("_Edge2", Float) = 1
+    [HDR]_MainColor ("主颜色", Color) = (1, 1, 1, 1)
+    [HDR]_EdgeColor ("边缘颜色", Color) = (1, 1, 1, 1)
+
+    _LightSpeed ("扫光速度", Float) = 1
+
+    _Threshold ("阈值", Float) = 1
+    _Edge1 ("边缘1", Float) = 1
+    _Edge2 ("边缘2", Float) = 1
+    _EdgeAlpha2 ("边缘透明度", Float) = 1
   }
   SubShader
   {
@@ -28,27 +29,29 @@ Shader "Custom/10-Shield/Shield"
     HLSLINCLUDE
 
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+    #include "Assets/ShaderLibrary/Utility/NodeFromShaderGraph.hlsl"
+
+    TEXTURE2D(_CameraDepthTexture);
+    SAMPLER(sampler_CameraDepthTexture);
+    TEXTURE2D(_LightTex);
+    SAMPLER(sampler_LightTex);
+    TEXTURE2D(_MaskTex);
+    SAMPLER(sampler_MaskTex);
+    TEXTURE2D(_NoiseTex);
+    SAMPLER(sampler_NoiseTex);
 
     CBUFFER_START(UnityPerMaterial)
 
+      real4 _LightTex_ST;
+      real4 _MaskTex_ST;
+      real4 _NoiseTex_ST;
+
       real4 _MainColor;
       real4 _EdgeColor;
-      real _FresnelPower;
 
-      TEXTURE2D(_CameraDepthTexture);
-      SAMPLER(sampler_CameraDepthTexture);
+      real _LightSpeed;
+      
 
-      TEXTURE2D(_CameraOpaqueTexture);
-      SAMPLER(sampler_CameraOpaqueTexture);
-
-      TEXTURE2D(_Noise);
-      SAMPLER(sampler_Noise);
-      real4 _Noise_ST;
-      real _NoiseIntensity;
-      real _NoiseRange;
-
-      real _SoftRange;
-      real _EdgeAlpha;
 
       real3 _HitCenter;
       real _EdgeAlpha2;
@@ -69,107 +72,7 @@ Shader "Custom/10-Shield/Shield"
         "LightMode" = "UniversalForward"
       }
 
-      Cull Back
-      ZTest LEqual
-      ZWrite Off
-
-      HLSLPROGRAM
-
-      #pragma vertex vert
-      #pragma fragment frag
-
-      struct appdata
-      {
-        real2 uv : TEXCOORD0;
-        real4 positionOS : POSITION;
-        real3 normalOS : NORMAL;
-      };
-
-      struct v2f
-      {
-        real2 uv : TEXCOORD0;
-        real4 positionCS : SV_POSITION;
-        real3 positionWS : TEXCOORD1;
-        real3 normalWS : TEXCOORD2;
-      };
-
-      v2f vert(appdata v)
-      {
-        v2f o = (v2f)0;
-
-        VertexPositionInputs positionInputs = GetVertexPositionInputs(v.positionOS.xyz);
-        VertexNormalInputs normalInputs = GetVertexNormalInputs(v.normalOS);
-        
-        o.uv = TRANSFORM_TEX(v.uv, _Noise);
-
-        o.positionCS = positionInputs.positionCS;
-        o.positionWS = positionInputs.positionWS;
-        o.normalWS = normalInputs.normalWS;
-
-        return o;
-      }
-
-      real4 frag(v2f i, real facing : VFACE) : SV_TARGET
-      {
-        real3 N = normalize(lerp(-i.normalWS, i.normalWS, saturate(facing)));
-        real3 V = normalize(GetCameraPositionWS() - i.positionWS);
-        real NoV = saturate(dot(N, V));
-        real fresnel = 1 - saturate(pow(NoV, _FresnelPower));
-
-        real4 screenPosition = i.positionCS / GetScaledScreenParams();
-        // ! 深度图的深度 近大远小 非线性
-        real depth = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, screenPosition.xy).r;
-        // ! 视图空间线性深度 远大近小
-        // * eyeDepth 本物体后面的物体的深度
-        real eyeDepth = LinearEyeDepth(depth, _ZBufferParams);
-        // ! 深度差 screenPosition.w 也是视图空间的线性深度 同样远大近小
-        // ! 所以用减来计算深度差
-        // * screenPosition.w 本物体的深度
-        real depthDiff = saturate(eyeDepth - screenPosition.w);
-        real edge = 1 - smoothstep(0, _SoftRange, depthDiff);
-        edge *= _EdgeAlpha;
-        real edge2 = 1 - smoothstep(0, _NoiseRange, depthDiff);
-        edge2 *= _EdgeAlpha;
-
-        real2 noiseUV = i.uv;
-        noiseUV.x += _Time.y;
-        real noise = SAMPLE_TEXTURE2D(_Noise, sampler_Noise, noiseUV).r;
-        // noise -= 0.5;
-        noise *= _NoiseIntensity;
-        noise *= edge2;
-        real2 opaqueUV = screenPosition.xy;
-        opaqueUV += noise;
-
-        real4 finalColor = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, opaqueUV);
-        finalColor += _MainColor * fresnel;
-        finalColor += _EdgeColor * edge;
-
-        real dist = distance(i.positionWS, _HitCenter);
-        real edge3 = saturate(abs(dist - _Threshold));
-        edge3 = smoothstep(_Edge1, _Edge2, edge3);
-        edge3 = 1 - (saturate(edge3));
-        real4 eColor = edge3 * _EdgeColor * 0.5 * _EdgeAlpha2;
-
-        finalColor += eColor;
-
-
-        
-        return finalColor;
-      }
-
-      ENDHLSL
-    }
-
-    Pass
-    {
-      Name "BasePass"
-
-      Tags
-      {
-        "LightMode" = "BackEdge"
-      }
-
-      Cull Front
+      Cull Off
       ZTest LEqual
       ZWrite Off
       Blend SrcAlpha OneMinusSrcAlpha
@@ -198,10 +101,15 @@ Shader "Custom/10-Shield/Shield"
       {
         v2f o = (v2f)0;
 
+        _NoiseTex_ST.w += _Time.y * 0.3;
+        real2 noiseUV = v.uv * _NoiseTex_ST.xy + _NoiseTex_ST.zw;
+        real noise = SAMPLE_TEXTURE2D_LOD(_NoiseTex, sampler_NoiseTex, noiseUV, 0).r;
+        v.positionOS.xyz += noise * v.normalOS * 0.01;
+
         VertexPositionInputs positionInputs = GetVertexPositionInputs(v.positionOS.xyz);
         VertexNormalInputs normalInputs = GetVertexNormalInputs(v.normalOS);
         
-        o.uv = TRANSFORM_TEX(v.uv, _Noise);
+        o.uv = v.uv;
 
         o.positionCS = positionInputs.positionCS;
         o.positionWS = positionInputs.positionWS;
@@ -212,19 +120,45 @@ Shader "Custom/10-Shield/Shield"
 
       real4 frag(v2f i, real facing : VFACE) : SV_TARGET
       {
-        real4 screenPosition = i.positionCS / GetScaledScreenParams();
+        real3 N = normalize(lerp(-i.normalWS, i.normalWS, facing));
+        real3 V = normalize(GetCameraPositionWS() - i.positionWS);
+        real NoV = saturate(dot(N, V));
+        real power = sin(_Time.y * 2);
+        power = Unity_Remap_float(power, real2(-1, 1), real2(3.5, 7));
+        real fresnel = pow(1 - saturate(NoV), power);
+        fresnel += 0.05;
 
+        _LightTex_ST.w += _Time.y * _LightSpeed;
+        real2 lightTexUV = i.uv * _LightTex_ST.xy + _LightTex_ST.zw;
+        real4 lightTex = SAMPLE_TEXTURE2D(_LightTex, sampler_LightTex, lightTexUV);
+
+        real2 maskTexUV = i.uv * _MaskTex_ST.xy + _MaskTex_ST.zw;
+        real4 maskTex = SAMPLE_TEXTURE2D(_MaskTex, sampler_MaskTex, maskTexUV);
+        real light = lightTex.r * (1 - maskTex.r);
+        
+        real4 screenPosition = i.positionCS / GetScaledScreenParams();
         real depth = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, screenPosition.xy).r;
         real eyeDepth = LinearEyeDepth(depth, _ZBufferParams);
-        real fragEyeDepth = screenPosition.w;
-        real depthDiff = saturate(eyeDepth - fragEyeDepth);
-        real edge = 1 - smoothstep(0, _SoftRange, depthDiff);
-        edge *= _EdgeAlpha;
-
-        real4 finalColor = _EdgeColor - 1 ;
-        finalColor.a = edge;
         
-        return finalColor;
+        real depthDiff = saturate(eyeDepth - screenPosition.w);
+        real edge = 1 - smoothstep(0, 0.15, depthDiff);
+
+        light += edge;
+
+        real dist = distance(i.positionWS, _HitCenter);
+        real edge3 = saturate(abs(dist - _Threshold));
+        edge3 = smoothstep(_Edge1, _Edge2, edge3);
+        edge3 = 1 - (saturate(edge3));
+        edge3 *= _EdgeAlpha2;
+
+        light += edge3;
+
+        light = lerp(light * 0.7, light, facing);
+
+        real3 finalColor = lerp(_MainColor.rgb, _EdgeColor.rgb, light);
+        real finalAlpha = saturate(fresnel + light);
+
+        return real4(finalColor, finalAlpha);
       }
 
       ENDHLSL

@@ -31,8 +31,8 @@ Material:
     m_Floats:
     - _CenterFocus: 0.5
     - _FresnelPower: 0.5
-    - _SSRMaxSampleCount: 64
-    - _SSRMaxSampleDistance: 100
+    - _SSRMaxSampleCount: 100
+    - _SSRMaxSampleDistance: 30
     - _SSRSampleStep: 10
     m_Colors:
     - _MainColor: {r: 1, g: 1, b: 1, a: 1}

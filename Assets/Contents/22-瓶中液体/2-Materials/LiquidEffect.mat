@@ -39,7 +39,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _Main_Texture:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 6c3bf047a83874191a8f3fc2bfea1b44, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -58,15 +58,14 @@ Material:
     m_Floats:
     - _Amplitude: 1
     - _FoamWidth: 0.04
-    - _Foam_Smoothness: 0.15
+    - _Foam_Smoothness: 0.03
     - _Frequency: 1
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Rim_Power: 4
+    - _Rim_Power: 1.62
     m_Colors:
-    - _BottomColor: {r: 0, g: 0.8207547, b: 0.2961154, a: 1}
+    - _BottomColor: {r: 0.0019331068, g: 0, b: 0.3207547, a: 1}
     - _FoamColor: {r: 0.2850213, g: 0.990566, b: 0.7492778, a: 1}
-    - _Rim_Color: {r: 0.69387895, g: 1, b: 0.32547167, a: 1}
-    - _TopColor: {r: 0, g: 0.6946828, b: 0.764151, a: 1}
+    - _Rim_Color: {r: 0.3630977, g: 0.30153078, b: 0.8301887, a: 1}
+    - _TopColor: {r: 0.26717696, g: 0.30388835, b: 0.7169812, a: 1}
   m_BuildTextureStacks: []
-  m_AllowLocking: 1

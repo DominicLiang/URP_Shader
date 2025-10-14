@@ -54,7 +54,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
         m_Texture: {fileID: 2800000, guid: 131c8f4202f3c4c61a7758797c305642, type: 3}
-        m_Scale: {x: 1, y: 3}
+        m_Scale: {x: 0.5, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RefractDistortTexture:
         m_Texture: {fileID: 2800000, guid: ff08c218825d0411da819df87d772166, type: 3}
@@ -75,11 +75,11 @@ Material:
     - _Caustics: 0
     - _CausticsDistortIntensity: 0.2
     - _CausticsDistortSpeed: 0.05
-    - _CausticsIntensity: 0.6
+    - _CausticsIntensity: 0.3
     - _CausticsPower: 2.7
     - _CausticsScale: 0.7
     - _CausticsSpeed: 2.5
-    - _DepthMax: 1.65
+    - _DepthMax: 2
     - _DepthMin: 0
     - _Foam: 0
     - _FoamDistortIntensity: 0.05
@@ -98,11 +98,11 @@ Material:
     - _FoamWidth: 0.3
     - _Fresnel: 0
     - _FresnelPower: 5
-    - _NormalIntensity: 1
+    - _NormalIntensity: 1.2
     - _NormalSpeed: 0
     - _NormalSpeed2: 0.05
     - _Reflect: 0
-    - _ReflectBlurIntensity: 0.5
+    - _ReflectBlurIntensity: 1.5
     - _ReflectDistortIntensity: 0.02
     - _ReflectIntensity: 0.5
     - _Refract: 0

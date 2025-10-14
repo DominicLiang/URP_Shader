@@ -13,6 +13,7 @@ public class TransparentDisort : ScriptableRendererFeature
       desc.depthBufferBits = 0;
 
       RenderingUtils.ReAllocateIfNeeded(ref sceneColorRT, desc, wrapMode: TextureWrapMode.Clamp);
+      cmd.SetGlobalTexture("_TransparentSceneColor", sceneColorRT);
 
     }
 
@@ -23,8 +24,9 @@ public class TransparentDisort : ScriptableRendererFeature
       {
         cmd.SetRenderTarget(sceneColorRT);
         cmd.ClearRenderTarget(true, true, Color.black);
-        Blitter.BlitCameraTexture(cmd, renderingData.cameraData.renderer.cameraColorTargetHandle, sceneColorRT);
-        cmd.SetGlobalTexture("_TransparentSceneColor", sceneColorRT);
+        context.ExecuteCommandBuffer(cmd);
+        cmd.Clear();
+        cmd.Blit(renderingData.cameraData.renderer.cameraColorTargetHandle, sceneColorRT);
       }
       context.ExecuteCommandBuffer(cmd);
       cmd.Clear();

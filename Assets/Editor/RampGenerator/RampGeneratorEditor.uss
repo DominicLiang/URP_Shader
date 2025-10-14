@@ -1,0 +1,5 @@
+Label {
+    width: 80px;
+    max-width: 80px;
+    min-width: 50px;
+}
