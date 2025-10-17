@@ -33,7 +33,7 @@ float Unity_Dither_float(float In, float4 ScreenPosition)
 }
 
 // Remap
-float Unity_Remap_float(real In, real2 InMinMax, real2 OutMinMax)
+float Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax)
 {
   return OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
 }
@@ -71,7 +71,8 @@ void Unity_Voronoi_Deterministic_float(float2 UV, float AngleOffset, float CellD
     {
       float2 lattice = float2(x, y);
       float2 offset = Unity_Voronoi_RandomVector_Deterministic_float(lattice + g, AngleOffset);
-      float d = distance(lattice + offset, f);
+      float2 point1 = lattice + offset;
+      float d = distance(point1, f);
       if (d < res.x)
       {
         res = float3(d, offset.x, offset.y);

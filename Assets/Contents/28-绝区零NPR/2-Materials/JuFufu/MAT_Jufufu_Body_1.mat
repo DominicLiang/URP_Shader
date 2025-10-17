@@ -65,6 +65,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 9853d0cf3fca649b89b10fe8ca6cd88a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _LightMapA:
+        m_Texture: {fileID: 2800000, guid: 9b0557a4994b5480a8edf95ef408c28b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: ad487c085903b428fbe94d18f6cfef32, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -79,6 +83,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RampMap:
+        m_Texture: {fileID: 2800000, guid: ad570be8563c44a6bb96f4fb64d63093, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -103,8 +111,8 @@ Material:
     - _AlphaClip: 0
     - _AlphaTest_On: 0
     - _AlphaToMask: 0
-    - _BSmooth: 0.596
-    - _BThreshold: 0.108
+    - _BSmooth: 0.314
+    - _BThreshold: 0.114
     - _BlackSmooth: 0.072
     - _BlackThreshold: 0.445
     - _Blend: 0
@@ -131,7 +139,7 @@ Material:
     - _Mat4Threshold: 1
     - _MetalSmooth: 0
     - _MetalThreshold: 0.379
-    - _Metallic: 7.8
+    - _Metallic: 0.692
     - _Mode: 0
     - _NormalMap_On: 0
     - _OcclusionStrength: 1
@@ -140,11 +148,13 @@ Material:
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Roughness: 0.1
+    - _SelfShadowStepEdge1: 0
+    - _SelfShadowStepEdge2: 0.251
     - _ShoeSmooth: 0.06
     - _ShoeThreshold: 0.41
     - _SkinSmooth: 0.072
     - _SkinThreshold: 0.406
-    - _Smoothness: 0.45
+    - _Smoothness: 0.361
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

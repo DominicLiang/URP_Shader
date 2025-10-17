@@ -52,6 +52,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 72b65034a87144182a5681913c3cc1ad, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _LightMapA:
+        m_Texture: {fileID: 2800000, guid: 51aa38fb2ce624ef69d3d613790fdf16, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 2708f0d1362a344dc896ed33dceec492, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -66,6 +70,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RampMap:
+        m_Texture: {fileID: 2800000, guid: 711247907a8f343bdae8a55d27ba96c3, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -124,6 +132,8 @@ Material:
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Roughness: 0.02
+    - _SelfShadowStepEdge1: 0.5
+    - _SelfShadowStepEdge2: 0.5
     - _ShoeSmooth: 0
     - _ShoeThreshold: 0.5
     - _SkinSmooth: 0.097
@@ -145,7 +155,7 @@ Material:
     - _ClothColor2: {r: 0, g: 0, b: 0, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _HightLightColor: {r: 1, g: 1, b: 1, a: 1}
+    - _HightLightColor: {r: 0, g: 0, b: 0, a: 1}
     - _MainColor: {r: 1, g: 1, b: 1, a: 1}
     - _MetalColor1: {r: 1, g: 1, b: 1, a: 1}
     - _MetalColor2: {r: 0, g: 0, b: 0, a: 1}

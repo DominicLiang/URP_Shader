@@ -270,7 +270,7 @@ Shader "Custom/18-NPR_PBR/NPR"
       // * float _SpecularIntensity
 
       // ! LightingPhysicallyBased_NPR
-      half3 LightingPhysicallyBased_NPR(BRDFData brdfData, half3 radiance, BRDFData brdfDataClearCoat,
+      half3 LightingPhysicallyBased_NPR2(BRDFData brdfData, half3 radiance, BRDFData brdfDataClearCoat,
       half3 lightColor, half3 lightDirectionWS, half lightAttenuation,
       half3 normalWS, half3 viewDirectionWS,
       half clearCoatMask, bool specularHighlightsOff)
@@ -319,7 +319,7 @@ Shader "Custom/18-NPR_PBR/NPR"
       // ! LightingPhysicallyBased_NPR
       half3 LightingPhysicallyBased_NPR(BRDFData brdfData, half3 radiance, BRDFData brdfDataClearCoat, Light light, half3 normalWS, half3 viewDirectionWS, half clearCoatMask, bool specularHighlightsOff)
       {
-        return LightingPhysicallyBased_NPR(brdfData, radiance, brdfDataClearCoat, light.color, light.direction, light.distanceAttenuation * light.shadowAttenuation, normalWS, viewDirectionWS, clearCoatMask, specularHighlightsOff);
+        return LightingPhysicallyBased_NPR2(brdfData, radiance, brdfDataClearCoat, light.color, light.direction, light.distanceAttenuation * light.shadowAttenuation, normalWS, viewDirectionWS, clearCoatMask, specularHighlightsOff);
       }
 
       // ! CalculateRadiance 不推荐 RampTex更直观
@@ -507,7 +507,7 @@ Shader "Custom/18-NPR_PBR/NPR"
                 if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
               #endif
               {
-                lightingData.additionalLightsColor += LightingPhysicallyBased_NPR(brdfData, brdfDataClearCoat, light,
+                lightingData.additionalLightsColor += LightingPhysicallyBased_NPR(brdfData, radiance, brdfDataClearCoat, light,
                 inputData.normalWS, inputData.viewDirectionWS,
                 surfaceData.clearCoatMask, specularHighlightsOff);
                 // ! 副灯

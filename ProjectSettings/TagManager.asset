@@ -13,7 +13,7 @@ TagManager:
   - Interact
   - Water
   - UI
-  - HairShadow
+  - 
   - 
   - 
   - real
@@ -36,9 +36,9 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - Hair
+  - Face
+  - Eye
   m_SortingLayers:
   - name: Default
     uniqueID: 0

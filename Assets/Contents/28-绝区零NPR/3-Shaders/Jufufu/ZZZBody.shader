@@ -7,44 +7,20 @@ Shader "Custom/ZZZNPR/ZZZBody"
     [NoScaleOffset]_MainTex ("主贴图", 2D) = "white" { }
     [NoScaleOffset]_BumpMap ("法线贴图", 2D) = "bump" { }
     [NoScaleOffset]_LightMap ("光照贴图", 2D) = "white" { }
+    [NoScaleOffset]_LightMapA ("光照贴图A", 2D) = "white" { }
+    [NoScaleOffset]_RampMap ("Ramp贴图", 2D) = "white" { }
 
-    _Mat1Threshold ("材质1阈值", Range(0, 1.05)) = 0.5
-    _Mat2Threshold ("材质2阈值", Range(0, 1.05)) = 0.5
-    _Mat3Threshold ("材质3阈值", Range(0, 1.05)) = 0.5
-    _Mat4Threshold ("材质4阈值", Range(0, 1.05)) = 0.5
-
-    _ShoeThreshold ("鞋子阈值", Range(0, 1)) = 0.5
-    _ShoeSmooth ("鞋子过渡", Range(0, 1)) = 0
-    _ShoeColor1 ("鞋子颜色1", Color) = (1, 1, 1, 1)
-    _ShoeColor2 ("鞋子颜色2", Color) = (1, 1, 1, 1)
-
-    _BlackThreshold ("衣服黑阈值", Range(0, 1)) = 0.5
-    _BlackSmooth ("衣服黑过渡", Range(0, 1)) = 0
-    _BlackColor1 ("衣服黑颜色1", Color) = (1, 1, 1, 1)
-    _BlackColor2 ("衣服黑颜色2", Color) = (1, 1, 1, 1)
-
-    _MetalThreshold ("金属阈值", Range(0, 1)) = 0.5
-    _MetalSmooth ("金属过渡", Range(0, 1)) = 0
-    _MetalColor1 ("金属颜色1", Color) = (1, 1, 1, 1)
-    _MetalColor2 ("金属颜色2", Color) = (1, 1, 1, 1)
-
-    _ClothThreshold ("衣服阈值", Range(0, 1)) = 0.5
-    _ClothSmooth ("衣服过渡", Range(0, 1)) = 0
-    _ClothColor1 ("衣服颜色1", Color) = (1, 1, 1, 1)
-    _ClothColor2 ("衣服颜色2", Color) = (1, 1, 1, 1)
-
-    _SkinThreshold ("皮肤阈值", Range(0, 1)) = 0.5
-    _SkinSmooth ("皮肤过渡", Range(0, 1)) = 0
-    _SkinColor1 ("皮肤颜色1", Color) = (1, 1, 1, 1)
-    _SkinColor2 ("皮肤颜色2", Color) = (1, 1, 1, 1)
-
-    _Metallic ("高光", Float) = 0.5
+    _Metallic ("金属度", Range(0, 1)) = 0.5
+    _Smoothness ("光滑度", Range(0, 1)) = 0.5
     _BThreshold ("高光阈值", Range(0, 1)) = 0.5
     _BSmooth ("高光过渡", Range(0, 1)) = 0
     _HightLightColor ("高光颜色", Color) = (1, 1, 1, 1)
 
     _OutlineWidth ("描边宽度", Float) = 1
     _OutlineColor ("描边颜色", Color) = (0, 0, 0, 1)
+
+    _SelfShadowStepEdge1 ("自阴影边缘1", Range(0, 1)) = 0.5
+    _SelfShadowStepEdge2 ("自阴影边缘2", Range(0, 1)) = 0.5
   }
   
   SubShader
@@ -72,40 +48,15 @@ Shader "Custom/ZZZNPR/ZZZBody"
     SAMPLER(sampler_BumpMap);
     TEXTURE2D(_LightMap);
     SAMPLER(sampler_LightMap);
+    TEXTURE2D(_LightMapA);
+    SAMPLER(sampler_LightMapA);
+    TEXTURE2D(_RampMap);
+    SAMPLER(sampler_RampMap);
 
     CBUFFER_START(UnityPerMaterial)
 
       // ! -------------------------------------
       // ! 变量声明
-      real _Mat1Threshold;
-      real _Mat2Threshold;
-      real _Mat3Threshold;
-      real _Mat4Threshold;
-
-      real _ShoeThreshold;
-      real _ShoeSmooth;
-      real4 _ShoeColor1;
-      real4 _ShoeColor2;
-
-      real _BlackThreshold;
-      real _BlackSmooth;
-      real4 _BlackColor1;
-      real4 _BlackColor2;
-
-      real _MetalThreshold;
-      real _MetalSmooth;
-      real4 _MetalColor1;
-      real4 _MetalColor2;
-
-      real _ClothThreshold;
-      real _ClothSmooth;
-      real4 _ClothColor1;
-      real4 _ClothColor2;
-
-      real _SkinThreshold;
-      real _SkinSmooth;
-      real4 _SkinColor1;
-      real4 _SkinColor2;
 
       real _Metallic;
       real _Smoothness;
@@ -117,7 +68,12 @@ Shader "Custom/ZZZNPR/ZZZBody"
       real _OutlineWidth;
       real4 _OutlineColor;
 
+      real _SelfShadowStepEdge1;
+      real _SelfShadowStepEdge2;
+
     CBUFFER_END
+
+    int _PerObjSelfShadowIndex;
 
     ENDHLSL
 
@@ -144,6 +100,7 @@ Shader "Custom/ZZZNPR/ZZZBody"
 
       // ! -------------------------------------
       // ! pass include
+      #include "../../../25-崩铁NPR/1-Scripts/PerObjectShadow/Shader/PerObjectShadow.hlsl"
 
       // ! -------------------------------------
       // ! Shader阶段
@@ -205,40 +162,43 @@ Shader "Custom/ZZZNPR/ZZZBody"
         return lerp(color2, color1, stepValue) * mask;
       }
 
-
-      void InitializeInputData(v2f input, half3 normalTS, out InputData inputData)
+      Light GetCharacterMainLight(float4 shadowCoord, float3 positionWS)
       {
-        inputData = (InputData)0;
+        Light light = GetMainLight();
 
-        inputData.positionWS = input.positionWS;
-        half3 viewDirWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
-        float sgn = input.tangentWS.w;      // should be either +1 or -1
-        float3 bitangent = sgn * cross(input.normalWS.xyz, input.tangentWS.xyz);
-        half3x3 tangentToWorld = half3x3(input.tangentWS.xyz, bitangent.xyz, input.normalWS.xyz);
-        inputData.tangentToWorld = tangentToWorld;
-        inputData.normalWS = TransformTangentToWorld(normalTS, tangentToWorld);
+        ShadowSamplingData shadowSamplingData = GetMainLightShadowSamplingData();
+        half4 shadowParams = GetMainLightShadowParams();
 
-        inputData.normalWS = NormalizeNormalPerPixel(inputData.normalWS);
-        inputData.viewDirectionWS = viewDirWS;
+        // 我自己试下来，在角色身上 LowQuality 比 Medium 和 High 好
+        // Medium 和 High 采样数多，过渡的区间大，在角色身上更容易出现 Perspective aliasing
+        shadowSamplingData.softShadowQuality = SOFT_SHADOW_QUALITY_LOW;
+        light.shadowAttenuation = SampleShadowmap(TEXTURE2D_ARGS(_MainLightShadowmapTexture, sampler_LinearClampCompare), shadowCoord, shadowSamplingData, shadowParams, false);
+        light.shadowAttenuation = lerp(light.shadowAttenuation, 1, GetMainLightShadowFade(positionWS));
 
-        inputData.shadowCoord = TransformWorldToShadowCoord(inputData.positionWS);
+        if (!IsMatchingLightLayer(light.layerMask, GetMeshRenderingLayer()))
+        {
+          // 偷个懒，直接把强度改成 0
+          light.distanceAttenuation = 0;
+          light.shadowAttenuation = 0;
+        }
 
-        inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(input.positionCS);
+        return light;
       }
 
       // ! -------------------------------------
       // ! 片元着色器
       real4 frag(v2f i) : SV_TARGET
       {
-        return real4(i.vertexColor.rgb, 1);
-
         real4 mainTexColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
         real4 bumpMapColor = SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, i.uv);
         real4 lightMapColor = SAMPLE_TEXTURE2D(_LightMap, sampler_LightMap, i.uv);
+        real4 lightMapColorA = SAMPLE_TEXTURE2D(_LightMapA, sampler_LightMapA, i.uv);
 
         real3x3 TBN = real3x3(i.tangentWS.xyz, i.bitangentWS, i.normalWS);
         real3 normalTS = UnpackNormal(bumpMapColor);
-        Light mainLight = GetMainLight();
+        half cascadeIndex = ComputeCascadeIndex(i.positionWS);
+        float4 shadowCoord = float4(mul(_MainLightWorldToShadow[cascadeIndex], float4(i.positionWS, 1.0)).xyz, 0.0);
+        Light mainLight = GetCharacterMainLight(shadowCoord, i.positionWS);
 
         real3 N = normalize(TransformTangentToWorld(normalTS, TBN));
         real3 L = normalize(mainLight.direction);
@@ -252,59 +212,65 @@ Shader "Custom/ZZZNPR/ZZZBody"
         real orgHalfLambert = dot(i.normalWS, L) * 0.5 + 0.5;
         real halfLambert = NdotL * 0.5 + 0.5;
 
+        real orgShadow = orgHalfLambert;
 
-        // 鞋子
-        real m1 = 1 - step(_Mat1Threshold, lightMapColor.r);
+        real selfShadow = MainLightPerObjectSelfShadow(i.positionWS, _PerObjSelfShadowIndex);
+        selfShadow = smoothstep(_SelfShadowStepEdge1, _SelfShadowStepEdge2, selfShadow);
 
-        // 衣服黑
-        real m2 = 1 - step(_Mat2Threshold, lightMapColor.r) - m1;
-
-        // 金属
-        real m3 = 1 - step(_Mat3Threshold, lightMapColor.r) - m1 - m2;
-
-        // 衣服黄
-        real m4 = 1 - step(_Mat4Threshold, lightMapColor.r) - m1 - m2 - m3;
-
-        // 皮肤
-        real m5 = saturate(1 - m1 - m2 - m3 - m4);
-
-        real4 shoeShadow = GetMatColor(halfLambert, _ShoeThreshold, _ShoeSmooth, _ShoeColor1, _ShoeColor2, m1);
-        real4 clothBlackShadow = GetMatColor(orgHalfLambert, _BlackThreshold, _BlackSmooth, _BlackColor1, _BlackColor2, m2);
-        real4 metalShadow = GetMatColor(halfLambert, _MetalThreshold, _MetalSmooth, _MetalColor1, _MetalColor2, m3);
-        real4 clothYellowShadow = GetMatColor(halfLambert, _ClothThreshold, _ClothSmooth, _ClothColor1, _ClothColor2, m4);
-        real4 skinShadow = GetMatColor(orgHalfLambert, _SkinThreshold, _SkinSmooth, _SkinColor1, _SkinColor2, m5);
-
-        real4 shadowColor = shoeShadow + clothBlackShadow + metalShadow + clothYellowShadow + skinShadow;
-
-        real4 metalMask = lightMapColor.g;
-
+        real2 rampUV = real2(orgHalfLambert, lightMapColor.r * 0.8 + 0.1);
+        real4 rampColor = SAMPLE_TEXTURE2D(_RampMap, sampler_RampMap, rampUV);
         
-        real4 finalColor = mainTexColor * shadowColor;
         
-        real highLight = pow(max(NdotH, 0.01), _Metallic) * m2;
+        
+        // return finalColor;
+        
+        real highLight = pow(max(NdotH, 0.01), _Metallic);
         highLight = smoothstep(_BThreshold, saturate(_BThreshold + _BSmooth), highLight);
+        highLight *= lightMapColorA.g;
         real4 highColor = highLight * _HightLightColor;
+        
+        real4 finalColor = mainTexColor * rampColor + highColor;
+
+        return finalColor;
+        
 
 
         InputData inputData = (InputData)0;
-        InitializeInputData(i, normalTS, inputData);
+        inputData.positionWS = i.positionWS;
+        half3 viewDirWS = GetWorldSpaceNormalizeViewDir(i.positionWS);
+        float sgn = i.tangentWS.w;      // should be either +1 or -1
+        float3 bitangent = sgn * cross(i.normalWS.xyz, i.tangentWS.xyz);
+        half3x3 tangentToWorld = half3x3(i.tangentWS.xyz, bitangent.xyz, i.normalWS.xyz);
+        inputData.tangentToWorld = tangentToWorld;
+        inputData.normalWS = TransformTangentToWorld(normalTS, tangentToWorld);
+        inputData.normalWS = NormalizeNormalPerPixel(inputData.normalWS);
+        inputData.viewDirectionWS = viewDirWS;
+        inputData.shadowCoord = TransformWorldToShadowCoord(inputData.positionWS);
+        inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(i.positionCS);
+        // 重要：添加雾效和光照相关数据
+        inputData.fogCoord = 0;
+        // inputData.vertexLighting = half3(0, 0, 0);
+        inputData.bakedGI = real3(1, 1, 1); // 使用球谐光照而不是固定值
+        
         
         SurfaceData surfaceData = (SurfaceData)0;
-        surfaceData.albedo = mainTexColor;
-        surfaceData.specular = half3(0.0, 0.0, 0.0);
-        surfaceData.metallic = 0.5;
+        
+        // 金属工作流配置 - 使用光照贴图控制
+        
+        // 确保 albedo 在正确的颜色空间
+        surfaceData.albedo = mainTexColor.rgb; // 只使用RGB分量
+        surfaceData.specular = half3(1, 1, 1); // metallic workflow
+        surfaceData.metallic = _Metallic;
         surfaceData.normalTS = normalTS;
-        surfaceData.smoothness = 0.7;
-
+        surfaceData.smoothness = _Smoothness; // 确保不为0
+        
+        surfaceData.emission = half3(0.0, 0.0, 0.0);
+        surfaceData.alpha = mainTexColor.a;
+        surfaceData.occlusion = 1; // 使用R通道作为AO
         
         real4 pbrColor = UniversalFragmentPBR(inputData, surfaceData);
-
-
-        finalColor = lerp(finalColor, pbrColor, metalMask * 2) + highColor;
-
-
         
-        return finalColor;
+        return pbrColor;
       }
 
       
@@ -398,12 +364,12 @@ Shader "Custom/ZZZNPR/ZZZBody"
       ENDHLSL
     }
 
-    pass
+    Pass
     {
-      Name "ShadowCaster"
+      Name "BodyShadow"
       Tags
       {
-        "LightMode" = "ShadowCaster"
+        "LightMode" = "PerObjectSelfShadowCaster"
       }
 
       ColorMask 0
@@ -413,18 +379,21 @@ Shader "Custom/ZZZNPR/ZZZBody"
 
       HLSLPROGRAM
 
-      // #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
+      #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
       // #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
-      #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
+      #include "../../../25-崩铁NPR/3-Shaders/ShadowCaster.hlsl"
+
+      #pragma target 2.0
 
       #pragma shader_feature _ALPHATEST_ON
       #pragma shader_feature _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
       #pragma multi_compile_instancing
 
       #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
+      #pragma multi_compile_vertex _ _CASTING_SELF_SHADOW
 
-      #pragma vertex ShadowPassVertex
-      #pragma fragment ShadowPassFragment
+      #pragma vertex vert
+      #pragma fragment frag
 
       ENDHLSL
     }

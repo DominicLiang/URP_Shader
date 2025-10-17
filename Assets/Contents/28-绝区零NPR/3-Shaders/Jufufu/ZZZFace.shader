@@ -251,6 +251,40 @@ Shader "Custom/ZZZNPR/ZZZFace"
 
       ENDHLSL
     }
+
+    Pass
+    {
+      Name "BodyShadow"
+      Tags
+      {
+        "LightMode" = "PerObjectSelfShadowCaster"
+      }
+
+      ColorMask 0
+      Cull Off
+      ZWrite On
+      ZTest LEqual
+
+      HLSLPROGRAM
+
+      #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
+      // #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
+      #include "../../../25-崩铁NPR/3-Shaders/ShadowCaster.hlsl"
+
+      #pragma target 2.0
+
+      #pragma shader_feature _ALPHATEST_ON
+      #pragma shader_feature _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+      #pragma multi_compile_instancing
+
+      #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
+      #pragma multi_compile_vertex _ _CASTING_SELF_SHADOW
+
+      #pragma vertex vert
+      #pragma fragment frag
+
+      ENDHLSL
+    }
   }
 
   // ! -------------------------------------

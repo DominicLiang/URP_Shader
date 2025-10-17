@@ -121,7 +121,7 @@ Material:
     - _MedSmooth: 0
     - _MedThreshold: 1
     - _MetalReflProbeIntensity: 0
-    - _Metallic: 0.2
+    - _Metallic: 0.319
     - _MetallicSpecToggle: 0
     - _MetallicSpecularMapToggle: 0
     - _NormalMapToggle: 0
@@ -135,7 +135,7 @@ Material:
     - _ReflectThreshold: 0.547
     - _ShadowSmooth: 0
     - _ShadowThreshold: 0.612
-    - _Smoothness: 0.8
+    - _Smoothness: 0.656
     - _SmoothnessGlossiness: 0
     - _SmoothnessGlossinessSource: 0
     - _SmoothnessTextureChannel: 0

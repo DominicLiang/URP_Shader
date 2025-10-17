@@ -33,7 +33,8 @@ v2f vert(appdata v)
 {
   v2f o = (v2f)0;
 
-  real3 dist = distance(mul(UNITY_MATRIX_M, real4(v.positionOS, 1)), _WorldSpaceCameraPos);
+  real dist = distance(mul(UNITY_MATRIX_M, real4(v.positionOS, 1)).xyz, _WorldSpaceCameraPos);
+
   dist = lerp(1, dist, 0.5);
 
 

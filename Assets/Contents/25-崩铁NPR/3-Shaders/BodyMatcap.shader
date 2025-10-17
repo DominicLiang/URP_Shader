@@ -220,6 +220,74 @@ Shader "Custom/StarRail/BodyMatcap"
 
       ENDHLSL
     }
+
+    Pass
+    {
+      Name "DepthOnly"
+
+      Tags
+      {
+        // ! LightMode一定要写对
+        "LightMode" = "DepthOnly"
+      }
+
+      ZWrite On
+      ZTest LEqual
+
+      ColorMask 0
+
+      HLSLPROGRAM
+
+      #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
+      #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
+      // ! 注意这里引用DepthOnlyPass.hlsl
+      #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
+
+      #pragma shader_feature _ALPHATEST_ON
+      #pragma shader_feature _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+      #pragma multi_compile_instancing
+
+      // ! 使用顶点片元着色器也要写对
+      #pragma vertex DepthOnlyVertex
+      #pragma fragment DepthOnlyFragment
+
+      ENDHLSL
+    }
+
+    // ! 支持MSAA
+    Pass
+    {
+      Name "DepthNormals"
+
+      Tags
+      {
+        // ! LightMode一定要写对
+        "LightMode" = "DepthNormals"
+      }
+
+      ZWrite On
+      ZTest LEqual
+
+      HLSLPROGRAM
+
+      #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
+      #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
+      // ! 注意这里引用DepthNormalsPass.hlsl
+      #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthNormalsPass.hlsl"
+
+      #pragma shader_feature _ALPHATEST_ON
+      #pragma shader_feature _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+      #pragma multi_compile_instancing
+      
+      // ! 写入到normalmap中
+      #pragma shader_feature_local _NORMAL_MAP
+
+      // ! 使用顶点片元着色器也要写对
+      #pragma vertex DepthNormalsVertex
+      #pragma fragment DepthNormalsFragment
+
+      ENDHLSL
+    }
   }
 
   // ! -------------------------------------

@@ -22,6 +22,9 @@ Shader "Custom/StarRail/Body"
 
     _OutlineWidth ("描边宽度", Float) = 1
     _OutlineColor ("描边颜色", Color) = (0, 0, 0, 1)
+
+    _SelfShadowStepEdge1 ("自阴影边缘1", Range(0, 1)) = 0.5
+    _SelfShadowStepEdge2 ("自阴影边缘2", Range(0, 1)) = 0.5
   }
   
   SubShader
@@ -42,7 +45,7 @@ Shader "Custom/StarRail/Body"
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
     #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Macros.hlsl"
     #include "Assets/ShaderLibrary/Utility/NodeFromShaderGraph.hlsl"
-    #include "../1-Scripts/PerObjectSelfShadow/Shader/PerObjectShadow.hlsl"
+    
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 
     // ! -------------------------------------
@@ -52,7 +55,7 @@ Shader "Custom/StarRail/Body"
     TEXTURE2D(_WarmRamp); SAMPLER(sampler_WarmRamp);
     TEXTURE2D(_CoolRamp); SAMPLER(sampler_CoolRamp);
 
-
+    
 
     CBUFFER_START(UnityPerMaterial)
 
@@ -65,12 +68,16 @@ Shader "Custom/StarRail/Body"
       real _RimLight;
       real _OutlineWidth;
       real4 _OutlineColor;
-      
-      int _PerObjSelfShadowIndex;
+
+      real _DitherAlpha;
+      real _AlphaTestThreshold;
+
+      real _SelfShadowStepEdge1;
+      real _SelfShadowStepEdge2;
       
     CBUFFER_END
-
-
+    
+    int _PerObjSelfShadowIndex;
 
     ENDHLSL
 
@@ -104,6 +111,7 @@ Shader "Custom/StarRail/Body"
 
       // ! -------------------------------------
       // ! pass include
+      #include "../1-Scripts/PerObjectShadow/Shader/PerObjectShadow.hlsl"
 
       // ! -------------------------------------
       // ! Shader阶段
@@ -112,10 +120,11 @@ Shader "Custom/StarRail/Body"
 
       // ! -------------------------------------
       // ! 材质关键字
-      // #pragma shader_feature _MAIN_LIGHT_SHADOWS_SCREEN
       #pragma shader_feature _MAIN_LIGHT_SHADOWS
       #pragma shader_feature _MAIN_LIGHT_SHADOWS_CASCADE
       #pragma multi_compile_fragment _ _SHADOWS_SOFT
+      #pragma multi_compile _ _LIGHT_LAYERS
+      #pragma multi_compile _ MAIN_LIGHT_CALCULATE_SHADOWS
       
 
       // ! -------------------------------------
@@ -141,8 +150,7 @@ Shader "Custom/StarRail/Body"
         real4 positionCS : SV_POSITION;
         real3 positionWS : TEXCOORD2;
         real3 normalWS : TEXCOORD3;
-        float3 avgNormalOS : TEXCOORD7;
-        real3 tangentOS : TEXCOORD8;
+        real4 shadowCoord : TEXCOORD4;
       };
 
       // ! -------------------------------------
@@ -160,11 +168,33 @@ Shader "Custom/StarRail/Body"
         o.positionCS = positionInputs.positionCS;
         o.positionWS = positionInputs.positionWS;
         o.normalWS = normalInputs.normalWS;
+        o.shadowCoord = GetShadowCoord(positionInputs);
 
-        o.avgNormalOS = v.avgNormalOS;
-        o.tangentOS = v.tangentOS;
 
         return o;
+      }
+
+      Light GetCharacterMainLight(float4 shadowCoord, float3 positionWS)
+      {
+        Light light = GetMainLight();
+
+        ShadowSamplingData shadowSamplingData = GetMainLightShadowSamplingData();
+        half4 shadowParams = GetMainLightShadowParams();
+
+        // 我自己试下来，在角色身上 LowQuality 比 Medium 和 High 好
+        // Medium 和 High 采样数多，过渡的区间大，在角色身上更容易出现 Perspective aliasing
+        shadowSamplingData.softShadowQuality = SOFT_SHADOW_QUALITY_LOW;
+        light.shadowAttenuation = SampleShadowmap(TEXTURE2D_ARGS(_MainLightShadowmapTexture, sampler_LinearClampCompare), shadowCoord, shadowSamplingData, shadowParams, false);
+        light.shadowAttenuation = lerp(light.shadowAttenuation, 1, GetMainLightShadowFade(positionWS));
+
+        if (!IsMatchingLightLayer(light.layerMask, GetMeshRenderingLayer()))
+        {
+          // 偷个懒，直接把强度改成 0
+          light.distanceAttenuation = 0;
+          light.shadowAttenuation = 0;
+        }
+
+        return light;
       }
 
       // ! -------------------------------------
@@ -185,10 +215,11 @@ Shader "Custom/StarRail/Body"
         // * b通道 高光遮罩 区别有高光的区域
         // * a通道 id 用来区别采集RampMap
 
-
+        
         // * 获取必要信息
-        real4 shadowCoord = TransformWorldToShadowCoord(i.positionWS);
-        Light mainLight = GetMainLight(shadowCoord);
+        half cascadeIndex = ComputeCascadeIndex(i.positionWS);
+        float4 shadowCoord = float4(mul(_MainLightWorldToShadow[cascadeIndex], float4(i.positionWS, 1.0)).xyz, 0.0);
+        Light mainLight = GetCharacterMainLight(shadowCoord, i.positionWS);
         real3 N = normalize(i.normalWS);
         real3 L = normalize(mainLight.direction);
         real3 V = normalize(GetWorldSpaceViewDir(i.positionWS));
@@ -196,6 +227,7 @@ Shader "Custom/StarRail/Body"
         real NdotL = dot(N, L); // 兰伯特
         real NdotH = dot(N, H); // 布林冯
         real NdotV = dot(N, V); // 菲尼尔
+        
 
         // * 计算ramp贴图uv
         real ao = lightMapColor.g;
@@ -204,13 +236,17 @@ Shader "Custom/StarRail/Body"
         shadow = max(0.001f, shadow) * 0.75f + 0.25f; // ? 经验值
         shadow = (shadow > 1) ? 0.99f : shadow; // * 防止采样超出边界
         // * 阴影计算
-        float4 shadowCoord3 = i.positionCS / GetScaledScreenParams();
-        mainLight.shadowAttenuation = half(SAMPLE_TEXTURE2D(_ScreenSpaceShadowmapTexture, sampler_PointClamp, shadowCoord3.xy).x);
-        real4 selfShadow = MainLightPerObjectSelfShadow(i.positionWS, _PerObjSelfShadowIndex);
+
+
+        // return mainLight.shadowAttenuation;
+        real selfShadow = MainLightPerObjectSelfShadow(i.positionWS, _PerObjSelfShadowIndex);
+        selfShadow = smoothstep(_SelfShadowStepEdge1, _SelfShadowStepEdge2, selfShadow);
+
         selfShadow = min(mainLight.shadowAttenuation, selfShadow);
-        shadow = lerp(0.20, shadow, saturate(mainLight.shadowAttenuation + HALF_EPS));
+        shadow = lerp(0.20, shadow, saturate(selfShadow + HALF_EPS));
         shadow = lerp(0, shadow, step(0.05, ao)); // AO < 0.05 的区域（自阴影区域）永远不受光
         shadow = lerp(1, shadow, step(ao, 0.95)); // AO > 0.95 的区域永远受最强光
+        // return shadow;
         real2 rampUV = real2(shadow, lightMapColor.a + 0.05);
 
         // return mainLight.shadowAttenuation;
@@ -229,7 +265,7 @@ Shader "Custom/StarRail/Body"
         float threshold = 1.03 - lightMapColor.b; // * 高光材质阈值
         float specular = smoothstep(threshold - _Roughness, threshold + _Roughness, blinnPhong); // * 高光
         specular *= lightMapColor.r * _HightLightIntensity;
-        real4 specularColor = real4(baseMapColor * mainLight.color * specular, 1);
+        real4 specularColor = real4(baseMapColor.rgb * mainLight.color * specular, 1);
 
         // * 边缘光
         real fresnel = pow(1.01 - saturate(NdotV), 10);

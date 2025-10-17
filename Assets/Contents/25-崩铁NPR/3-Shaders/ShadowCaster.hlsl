@@ -1,9 +1,10 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 
-struct a2v
+struct appdata
 {
-  float4 vertex : POSITION;
-  float3 normal : NORMAL;
+  float4 positionOS : POSITION;
+  float3 normalOS : NORMAL;
   float2 texcoord : TEXCOORD0;
 };
 
@@ -13,16 +14,12 @@ struct v2f
   float4 pos : SV_POSITION;
 };
 
-
-
 // 获取裁剪空间下的阴影坐标
-float4 GetShadowPositionHClips(a2v v)
+float4 GetShadowPositionHClips(appdata v)
 {
-  float4 vertex_OS = v.vertex;
-
   //阴影
-  float3 positionWS = TransformObjectToWorld(vertex_OS.xyz);
-  float3 normalWS = TransformObjectToWorldNormal(v.normal);
+  float3 positionWS = TransformObjectToWorld(v.positionOS.xyz);
+  float3 normalWS = TransformObjectToWorldNormal(v.normalOS);
 
   Light mainLight = GetMainLight();
   // 获取阴影专用裁剪空间下的坐标
@@ -38,7 +35,7 @@ float4 GetShadowPositionHClips(a2v v)
   return positionCS;
 }
 
-v2f vert(a2v v)
+v2f vert(appdata v)
 {
   v2f o;
   o.uv = v.texcoord;
@@ -48,9 +45,5 @@ v2f vert(a2v v)
 
 half4 frag(v2f i, FRONT_FACE_TYPE isFrontFace : FRONT_FACE_SEMANTIC) : SV_TARGET
 {
-  // real4 color = SAMPLE_TEXTURE2D(_ColorMap, sampler_ColorMap, i.uv);
-  // color = IS_FRONT_VFACE(isFrontFace, color, real4(1, 1, 1, 1));
-  // clip(color.a - 0.5);
-
   return 0;
 }

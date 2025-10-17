@@ -8,13 +8,13 @@ namespace Ramp
   {
     public Texture2D GenerateRamp(RampDataSO rampData)
     {
+      var gradientHeight = 5;
+
       var width = rampData.outputSize;
-      var height = rampData.gradients.Count * 2;
+      var height = rampData.gradients.Count * gradientHeight;
       var rampMap = new Texture2D(width, height, TextureFormat.ARGB32, false);
       rampMap.filterMode = FilterMode.Bilinear;
       rampMap.wrapMode = TextureWrapMode.Clamp;
-
-      var gradientHeight = 2;
 
       for (int i = 0; i < height; i++)
       {
@@ -56,7 +56,18 @@ namespace Ramp
       var bytes = rampMap.EncodeToPNG();
       File.WriteAllBytes(path + ".png", bytes);
 
-      AssetDatabase.CreateAsset(rampData, path + ".asset");
+      var assetPath = path + ".asset";
+      if (File.Exists(assetPath))
+      {
+        // 如果资产已存在，标记为脏并保存
+        EditorUtility.SetDirty(rampData);
+        AssetDatabase.SaveAssets();
+      }
+      else
+      {
+        // 如果资产不存在，创建新的
+        AssetDatabase.CreateAsset(rampData, assetPath);
+      }
 
       AssetDatabase.Refresh();
     }
