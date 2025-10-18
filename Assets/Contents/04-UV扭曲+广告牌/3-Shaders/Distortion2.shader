@@ -8,11 +8,11 @@ Shader "Custom/04-Distortion/Distortion2"
 
   SubShader
   {
-    LOD 200
+
 
     Tags
     {
-      "Queue" = "Overlay+100"
+      "Queue" = "Transparent+1"
       "RenderPipeline" = "UniversalPipeline"
     }
     
@@ -22,24 +22,30 @@ Shader "Custom/04-Distortion/Distortion2"
     
     TEXTURE2D(_TransparentSceneColor);
     SAMPLER(sampler_TransparentSceneColor);
-
     CBUFFER_START(UnityPerMaterial)
       
-      TEXTURE2D(_Noise);
-      real4 _Noise_ST;
-      SAMPLER(sampler_Noise);
 
-      real _Intensity;
 
       
       
     CBUFFER_END
+
+    TEXTURE2D(_Noise);
+    real4 _Noise_ST;
+    SAMPLER(sampler_Noise);
+
+    real _Intensity;
     
     ENDHLSL
 
     pass
     {
       Name "BasePass"
+
+      Tags
+      {
+        "LightMode" = "Distortion"
+      }
 
       ZWrite On
 

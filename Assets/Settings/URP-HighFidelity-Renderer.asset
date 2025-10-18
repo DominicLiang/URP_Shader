@@ -315,9 +315,10 @@ MonoBehaviour:
   - {fileID: 8643988099784544134}
   - {fileID: 4388714222323410033}
   - {fileID: 6336525724795001157}
-  - {fileID: 361623022343892123}
   - {fileID: -5938232133773094689}
-  m_RendererFeatureMap: f2308bacb3dd76d48d6449f513649f577cd82cd17419c583608616cdeb0d15e0e6255eb2536bd3a5dd83f92c1a5de1ccd7983bb1b2e45409391e8ea330a0a113868f5c02619df57771a44a3255d8e73c45d9870893dcef579b2c690d39be0405df10a520562997ad
+  - {fileID: 4014201436781077392}
+  - {fileID: 5206840115520140372}
+  m_RendererFeatureMap: f2308bacb3dd76d48d6449f513649f577cd82cd17419c583608616cdeb0d15e0e6255eb2536bd3a5dd83f92c1a5de1ccd7983bb1b2e45409391e8ea330a0a113868f5c02619df57771a44a3255d8e73c45d9870893dcef57df10a520562997ad90e33248f04eb53754f4d47f7f694248
   m_UseNativeRenderPass: 1
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -366,19 +367,6 @@ MonoBehaviour:
   m_CopyDepthMode: 2
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 0
---- !u!114 &361623022343892123
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85f81921eedf54bc7bda4fa35022b564, type: 3}
-  m_Name: TransparentDisort
-  m_EditorClassIdentifier: 
-  m_Active: 0
 --- !u!114 &526009621351533476
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -481,6 +469,19 @@ MonoBehaviour:
     type: 2}
   hairShadowColor: {r: 1, g: 0.8319576, b: 0.7311321, a: 1}
   offset: 0.005
+--- !u!114 &4014201436781077392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdc632b605f14f5c892e7e0bc896df7b, type: 3}
+  m_Name: TransparentGrabRF
+  m_EditorClassIdentifier: 
+  m_Active: 1
 --- !u!114 &4388714222323410033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -497,6 +498,49 @@ MonoBehaviour:
   downSampleScale: 1
   iteration: 50
   intensity: 0.5
+--- !u!114 &5206840115520140372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
+  m_Name: Distortion
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    passTag: Distortion
+    Event: 550
+    filterSettings:
+      RenderQueueType: 1
+      LayerMask:
+        serializedVersion: 2
+        m_Bits: 4294967295
+      PassNames:
+      - Distortion
+    overrideMaterial: {fileID: 0}
+    overrideMaterialPassIndex: 0
+    overrideShader: {fileID: 0}
+    overrideShaderPassIndex: 0
+    overrideMode: 1
+    overrideDepthState: 0
+    depthCompareFunction: 4
+    enableWrite: 1
+    stencilSettings:
+      overrideStencilState: 0
+      stencilReference: 0
+      stencilCompareFunction: 8
+      passOperation: 0
+      failOperation: 0
+      zFailOperation: 0
+    cameraSettings:
+      overrideCamera: 0
+      restoreCamera: 1
+      offset: {x: 0, y: 0, z: 0, w: 0}
+      cameraFieldOfView: 60
 --- !u!114 &6313875239479108749
 MonoBehaviour:
   m_ObjectHideFlags: 0
